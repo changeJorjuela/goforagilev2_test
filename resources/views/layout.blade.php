@@ -14,7 +14,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="HandheldFriendly" content="true">
-    <meta name="MobileOptimized" content="width">    
+    <meta name="MobileOptimized" content="width">
     <link type="image/x-icon" rel="icon" href="{{asset("img/IsotipoGFA.png")}}">
     <link rel="stylesheet" href="{{asset("css/font-awesome/css/all.min.css")}}">
     <!-- Common CSS -->
@@ -54,7 +54,7 @@
         <div class="app-container">
             @include("aside")
             <div class="app-main">
-                    @yield('headerPage')
+                @yield('headerPage')
                 <div class="main-content">
                     @yield('contenido')
                 </div>
@@ -72,18 +72,23 @@
     <script src="{{asset("template/vendor/onoffcanvas/onoffcanvas.js")}}"></script>
     <script src="{{asset("template/js/moment.js")}}"></script>
 
-    <!-- Slimscroll JS -->
-    <script src="{{asset("template/vendor/slimscroll/slimscroll.min.js")}}"></script>
-    <script src="{{asset("template/vendor/slimscroll/custom-scrollbar.js")}}"></script>
+    <!-- Peity JS -->
+    <script src="{{asset("template/vendor/peity/peity.min.js")}}"></script>
+    <script src="{{asset("template/vendor/peity/custom-peity.js")}}"></script>
+
+    <!-- Circliful js -->
+    <script src="{{asset("template/vendor/circliful/circliful.min.js")}}"></script>
+    <script src="{{asset("template/vendor/circliful/circliful.custom.js")}}"></script>
 
     <!-- Chartist JS -->
     <script src="{{asset("template/vendor/chartist/js/chartist.min.js")}}"></script>
-    <script src="{{asset("template/vendor/chartist/js/chartist-tooltip.js")}}"></script>
-    <script src="{{asset("template/vendor/chartist/js/custom/custom-line-chart.js")}}"></script>
-    <script src="{{asset("template/vendor/chartist/js/custom/custom-line-chart1.js")}}"></script>
-    <script src="{{asset("template/vendor/chartist/js/custom/custom-area-chart.js")}}"></script>
-    <script src="{{asset("template/vendor/chartist/js/custom/donut-chart2.js")}}"></script>
-    <script src="{{asset("template/vendor/chartist/js/custom/custom-line-chart4.js")}}"></script>
+    <!-- <script src="{{asset("template/vendor/chartist/js/chartist-tooltip.js")}}"></script> -->
+    <!-- <script src="{{asset("template/vendor/chartist/js/custom/custom-area-chart2.js")}}"></script> -->
+    <!-- <script src="{{asset("template/vendor/chartist/js/custom/custom-compare-line.js")}}"></script> -->
+
+    <!-- Slimscroll JS -->
+    <script src="{{asset("template/vendor/slimscroll/slimscroll.min.js")}}"></script>
+    <script src="{{asset("template/vendor/slimscroll/custom-scrollbar.js")}}"></script>
 
     <!-- Datatables -->
     <script src="{{asset("DataTables/datatables/jquery.dataTables.min.js")}}"></script>

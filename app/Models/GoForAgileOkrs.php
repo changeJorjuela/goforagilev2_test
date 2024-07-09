@@ -83,7 +83,8 @@ class GoForAgileOkrs extends Model
 		LEFT JOIN Okrs_Resultados ON Okrs_Resultados.id_okrs = Okrs_Equipos.id_okrs
 		LEFT JOIN goforagile_admin.Empleados AS Empleados ON Empleados.id = Okrs_Equipos.id_empleado
 		LEFT JOIN goforagile_admin.Empleados AS EO ON EO.id = Okrs.id_empleado		
-		WHERE Okrs_Equipos.id_empresa = '" . $id_empresa . "'
+		WHERE Okrs_Equipos.id_empresa = $id_empresa
+        AND Okrs.anio = 2024
         GROUP BY Okrs.id
 		ORDER BY Okrs.objetivo_okr ASC        
 		");
@@ -97,9 +98,15 @@ class GoForAgileOkrs extends Model
         $resultado_prom_okr = 0;
         DB::setDefaultConnection("mysql-goforagile_okrs");
         $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Resultados WHERE id_okrs = $id_okr");
-
+        // dd($ResultadosOKR);
         foreach ($ResultadosOKR as $resultado) {
-            $porcentaje = ($resultado->avance * 100) / $resultado->meta;
+            $avance = (int)$resultado->avance;
+            $meta = (int)$resultado->meta;
+            if ($meta > 0) {
+                $porcentaje = ($avance * 100) / $meta;
+            } else {
+                $porcentaje = 0;
+            }
             $suma_resultado += $porcentaje;
             $conteo_resultado++;
         }
@@ -113,6 +120,31 @@ class GoForAgileOkrs extends Model
             "promedio" => $resultado_prom_okr,
             "no_resultados" => count($ResultadosOKR)
         );
+
         return $nodo;
+    }
+
+    public static function OrderResultados($id_okr)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Resultados WHERE id_okrs = $id_okr AND orden IS NULL");
+        $array_resultados = array();
+        $contRes = 0;
+        foreach ($ResultadosOKR as $row) {
+            $array_resultados[$contRes]['id'] = $row->id;
+            $array_resultados[$contRes]['orden'] = $row->orden;
+            $contRes++;
+            for ($i = 0; $i < count($array_resultados); $i++) {
+                $j = $i + 1;
+                DB::Update("UPDATE Okrs_Resultados SET orden = $j WHERE id = '" . $array_resultados[$i]['id'] . "' ");
+            }
+        }
+    }
+
+    public static function ResultadosOKRFiltro($id_okr, $filtro)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Resultados WHERE id_okrs = $id_okr $filtro ORDER BY orden ASC");
+        return $ResultadosOKR;
     }
 }

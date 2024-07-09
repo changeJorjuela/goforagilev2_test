@@ -67,8 +67,15 @@ class GoForAgileOkrs extends Model
         return $escala;
     }
 
-    public static function OkrsOrganizacion($id_empresa)
+    public static function OkrsOrganizacion($id_empresa, $porPagina, $offset)
     {
+        $adicional = "";
+        if($porPagina){
+            $adicional .= " LIMIT $porPagina";
+        }
+        if($offset){
+            $adicional .= " OFFSET $offset";
+        }
         DB::setDefaultConnection("mysql-goforagile_okrs");
         $OkrsOrganizacion = DB::Select("
 		SELECT Okrs_Equipos.id AS id, Okrs_Equipos.id_empresa AS id_empresa , 
@@ -86,7 +93,8 @@ class GoForAgileOkrs extends Model
 		WHERE Okrs_Equipos.id_empresa = $id_empresa
         AND Okrs.anio = 2024
         GROUP BY Okrs.id
-		ORDER BY Okrs.objetivo_okr ASC        
+		ORDER BY Okrs.objetivo_okr ASC
+        $adicional       
 		");
         return $OkrsOrganizacion;
     }

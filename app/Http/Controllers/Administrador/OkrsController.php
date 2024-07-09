@@ -7,18 +7,25 @@ use App\Models\GoForAgileAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use App\Models\GoForAgileOkrs;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class OkrsController extends Controller
 {
-    public function OkrsOrganizacion()
+    public function OkrsOrganizacion(Request $request)
     {
+        $porPagina = 10;       
+        $paginaActual = LengthAwarePaginator::resolveCurrentPage('pagina');
+        // dd(LengthAwarePaginator::resolveCurrentPage('pagina'));
+        $offset = ($paginaActual - 1) * $porPagina;
         $filtro = "";
         $avance_general = $count_avance_general_equipo = 0;
-        $OkrsOrganizacion = GoForAgileOkrs::OkrsOrganizacion(Session::get('id_empresa'));
-        // dd($OkrsOrganizacion);
+        $prueba = GoForAgileOkrs::OkrsOrganizacion(Session::get('id_empresa'),null,null);
+        $OkrsOrganizacion = GoForAgileOkrs::OkrsOrganizacion(Session::get('id_empresa'), $porPagina, $offset);        
+        // dd($count);
         $array_okrs = $array_resultados = $array_iniciativas = array();
         $contOkrs = $contKR = $contIni = 0;
-        foreach ($OkrsOrganizacion as $value) {
+        foreach ($prueba as $value) {
             $promedio = GoForAgileOkrs::ResultadosOKR($value->id_okrs);
             $porcentaje_avance = round($promedio["promedio"]);
 
@@ -77,16 +84,26 @@ class OkrsController extends Controller
             $EscalaColor = GoForAgileOkrs::EscalaColor($porcentaje_avance, Session::get('id_empresa'));
             $array_okrs[$contOkrs]['color_bg'] = $EscalaColor["color_bg"];
             GoForAgileOkrs::OrderResultados($row->id_okrs);
-            $contOkrs++;
             $resultadosVisual = GoForAgileOkrs::ResultadosOKRFiltro($row->id_okrs,$filtro);
             foreach($resultadosVisual as $resultado){
-
+                $array_resultados[$contKR]["id"] = $resultado->id;
+                $contKR++;
             }
+            $array_okrs[$contOkrs]['kr'] = $array_resultados;
+            $contOkrs++;            
         }
+        dd($array_okrs);
+
+        $currentElements = array_slice($prueba, $offset, $porPagina);
+
+        $paginacion = new LengthAwarePaginator($currentElements, count($prueba), 10, $paginaActual,[
+            'path' => $request->url(),
+            'pageName' => 'pagina'
+        ]);
 
         return view('okrsEquipos.okrsOrganizacion', [
             'PorcentajeFinal' => $porcentaje_final, 'PorcentajeBarra' => $porcentaje_barra, 'PorcentajeFinalBarra' => $porcentajeFinalBarra, 'ColorPorcentaje' => $backgroundColor,
-            'Okrs' => $array_okrs
+            'Okrs' => $array_okrs,'paginacion' => $paginacion
         ]);
     }
 }

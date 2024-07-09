@@ -1,5 +1,6 @@
 @extends("layout")
 
+
 @section('titulo')
 Okrs Organización
 @endsection
@@ -74,6 +75,9 @@ Okrs Organización
     </div>
 </div>
 @endforeach
+<div class="d-flex justify-content-end">
+{{$paginacion->links()}}
+</div>
 
 @endsection
 @section('scripts')
@@ -84,6 +88,7 @@ Okrs Organización
         $("#menuOkrsOrganizacion").addClass("current-page");
         $('.js-example-basic-single').select2();
     });
+    
 </script>
 
 @endsection

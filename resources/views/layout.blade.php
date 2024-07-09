@@ -3,7 +3,7 @@
 
 <head>
     <html lang="{{ app()->getLocale() }}">
-    <title>GO FOR AGILE - OKR Suite By Change Americas</title>
+    <title>GOFORAGILE - @yield('titulo')</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -59,8 +59,10 @@
                     @yield('contenido')
                 </div>
             </div>
+            
         </div>
         @include("footer")
+        
         <aside class="control-sidebar control-sidebar-dark">
         </aside>
     </div>
@@ -110,6 +112,31 @@
 
 
     @yield('scripts')
+    <script>
+        $(document).ready(function() {
+            irArriba();
+        }); //Hacia arriba
+
+        function irArriba() {
+            $('.ir-arriba').click(function() {
+                $('body,html').animate({
+                    scrollTop: '0px'
+                }, "fast");
+            });
+            $(window).scroll(function() {
+                if ($(this).scrollTop() > 0) {
+                    $('.ir-arriba').slideDown(600);
+                } else {
+                    $('.ir-arriba').slideUp("fast");
+                }
+            });
+            $('.ir-abajo').click(function() {
+                $('body,html').animate({
+                    scrollTop: '1000px'
+                }, 1000);
+            });
+        }
+    </script>
 </body>
 
 </html>

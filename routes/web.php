@@ -10,6 +10,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Administrador\AdministradorController;
 use App\Http\Controllers\Administrador\OkrsController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ExtrasController;
 use App\Http\Controllers\Lider\LiderController;
 use App\Http\Controllers\Colaborador\ColaboradorController;
 
@@ -53,6 +54,8 @@ Route::group(['middleware' => 'revalidate'], function () {
         Route::get('cargueMasivo', [AdministradorController::class, 'CargueMasivo'])->name('cargueMasivo');
         // OKRS
         Route::get('okrsOrganizacion', [OkrsController::class, 'OkrsOrganizacion'])->name('okrsOrganizacion');
+        Route::get('profileEmpleado', [ExtrasController::class, 'ProfileEmpleado'])->name('profileEmpleado');
+        
         Route::get('logout', function () {
             Auth::logout();
             Session::flush();
@@ -75,6 +78,8 @@ Route::group(['middleware' => 'revalidate'], function () {
         });
     });
 
+    // ADMINISTRACIÓN
     Route::post('crearArea', [AdminController::class, 'CrearArea'])->name('crearArea');
     Route::post('actualizarArea', [AdminController::class, 'ActualizarArea'])->name('actualizarArea');
+    
 });

@@ -61,13 +61,18 @@ Okrs Organización
                                 {{ $okr['anio'] }}: {{ $okr['fecha_inicia'] }} a {{ $okr['fecha_termina'] }} || Publicado por: {{ $okr['nombre_owner'] }}
                             </div>
                         </th>
+                        <th>
+                        @foreach($okr['kr'] as $kr)
+                        {{ $kr["id"] }}
+                        @endforeach
+                        </th>
                     </thead>
                 </table>
             </div>
             <div class="card-body responsive" id="bodyOKR">
                 <div class="col-md-12 col-sm-12">
                     <div class="accordion" id="accordionKr_{{ $okr['id_okrs'] }}">
-                        @include("okrsEquipos.resultados")
+                        
                     </div>
                 </div>
             </div>
@@ -78,7 +83,7 @@ Okrs Organización
 <div class="d-flex justify-content-end">
 {{$paginacion->links()}}
 </div>
-
+@include("modals.modalProfile")
 @endsection
 @section('scripts')
 <script>
@@ -87,8 +92,7 @@ Okrs Organización
         $("#navOkrs").addClass("in");
         $("#menuOkrsOrganizacion").addClass("current-page");
         $('.js-example-basic-single').select2();
-    });
-    
+    });    
 </script>
-
+<script src="{{asset("js/okrs.min.js")}}"></script>
 @endsection

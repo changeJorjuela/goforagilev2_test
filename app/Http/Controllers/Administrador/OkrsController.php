@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use App\Models\GoForAgileOkrs;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
 
 class OkrsController extends Controller
 {
@@ -18,7 +17,7 @@ class OkrsController extends Controller
         $paginaActual = LengthAwarePaginator::resolveCurrentPage('pagina');
         // dd(LengthAwarePaginator::resolveCurrentPage('pagina'));
         $offset = ($paginaActual - 1) * $porPagina;
-        $filtro = "";
+        $filtro = $nombre = $foto = $cargo = $area = $vp= "";
         $avance_general = $count_avance_general_equipo = 0;
         $prueba = GoForAgileOkrs::OkrsOrganizacion(Session::get('id_empresa'),null,null);
         $OkrsOrganizacion = GoForAgileOkrs::OkrsOrganizacion(Session::get('id_empresa'), $porPagina, $offset);        
@@ -74,7 +73,7 @@ class OkrsController extends Controller
                     $foto_owner = $owner->foto;
                 }
             }
-            $array_okrs[$contOkrs]["foto"] = '<a class="profile-thumb" href="javascript:Profile(' . $row->id_okrs . ',1)"><img loading="lazy" src="../../recursos/' . $foto_owner . '" class="profile-thumb" title="' . $row->nombre_owner . '" style="width:70px;height:70px;"></a>';
+            $array_okrs[$contOkrs]["foto"] = '<a class="profile-thumb" href="javascript:Profile(' . $row->id_owner . ',1)"><img loading="lazy" src="../../recursos/' . $foto_owner . '" class="profile-thumb" title="' . $row->nombre_owner . '" style="width:70px;height:70px;"></a>';
             $promedio = GoForAgileOkrs::ResultadosOKR($row->id_okrs);
             $porcentaje_avance = round($promedio["promedio"]);
             if (is_nan($porcentaje_avance)) {
@@ -92,7 +91,7 @@ class OkrsController extends Controller
             $array_okrs[$contOkrs]['kr'] = $array_resultados;
             $contOkrs++;            
         }
-        dd($array_okrs);
+        // dd($array_okrs);
 
         $currentElements = array_slice($prueba, $offset, $porPagina);
 
@@ -103,7 +102,7 @@ class OkrsController extends Controller
 
         return view('okrsEquipos.okrsOrganizacion', [
             'PorcentajeFinal' => $porcentaje_final, 'PorcentajeBarra' => $porcentaje_barra, 'PorcentajeFinalBarra' => $porcentajeFinalBarra, 'ColorPorcentaje' => $backgroundColor,
-            'Okrs' => $array_okrs,'paginacion' => $paginacion
+            'Okrs' => $array_okrs,'paginacion' => $paginacion, 'Nombre' => $nombre, 'Foto' => $foto, 'Cargo' => $cargo, 'Area' => $area, 'VP' => $vp
         ]);
     }
 }

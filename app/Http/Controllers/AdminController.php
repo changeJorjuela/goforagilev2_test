@@ -80,7 +80,7 @@ class AdminController extends Controller
     public static function FindUrl(){
         $RolUser = (int)Session::get('role_plataforma');
         switch($RolUser){
-            case 1: $url = 'admin/';
+            case 1: $url = 'administrador/';
                     break;
             case 2: return Redirect::to('lider/home');
                     break;

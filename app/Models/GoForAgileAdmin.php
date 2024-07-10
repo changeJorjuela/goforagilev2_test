@@ -86,6 +86,46 @@ class GoForAgileAdmin extends Model
         return $usuario;
     }
 
+    public static function CardProfile($id){
+        DB::setDefaultConnection("mysql-goforagile_admin");
+        $profile = array();
+        $cont = 0;
+        $empleado = DB::Select("SELECT * FROM Empleados WHERE id = $id");
+        foreach($empleado as $row1){
+            $profile[$cont]["nombre"] = $row1->nombre;
+            $profile[$cont]["foto"] = $row1->foto;
+            $areas = DB::Select("SELECT * FROM Areas WHERE id = $row1->area");
+            if($areas){
+                foreach($areas as $row2){
+                    $profile[$cont]["area"] = $row2->nombre;
+                }                
+            }else{
+                $profile[$cont]["area"] = $row1->area;
+            }
+            $cargos = DB::Select("SELECT * FROM Cargos WHERE id = $row1->id_cargo");
+            if($cargos){
+                foreach($cargos as $row3){
+                    $profile[$cont]["cargo"] = $row3->nombre;
+                }                
+            }else{
+                $profile[$cont]["cargo"] = $row1->cargo;
+            }
+            if($row1->unidad_corporativa){
+                $vp = DB::Select("SELECT * FROM Vicepresidencia WHERE id = $row1->unidad_corporativa");
+                if($vp){
+                    foreach($vp as $row4){
+                        $profile[$cont]["vicepresidencia"] = $row4->nombre;
+                    }                
+                }else{
+                    $profile[$cont]["vicepresidencia"] = $row1->unidad_corporativa;
+                }
+            }else{
+                $profile[$cont]["vicepresidencia"] = "";
+            }        
+        }
+        return $profile;
+    }
+
     // EMPRESAS
     public static function ListarEmpresa($idEmpresa)
     {

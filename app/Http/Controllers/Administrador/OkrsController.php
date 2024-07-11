@@ -22,7 +22,7 @@ class OkrsController extends Controller
         $prueba = GoForAgileOkrs::OkrsOrganizacion(Session::get('id_empresa'),null,null);
         $OkrsOrganizacion = GoForAgileOkrs::OkrsOrganizacion(Session::get('id_empresa'), $porPagina, $offset);        
         // dd($count);
-        $array_okrs = $array_resultados = $array_iniciativas = array();
+        $array_okrs = $array_iniciativas = array();
         $contOkrs = $contKR = $contIni = 0;
         foreach ($prueba as $value) {
             $promedio = GoForAgileOkrs::ResultadosOKR($value->id_okrs);
@@ -84,8 +84,11 @@ class OkrsController extends Controller
             $array_okrs[$contOkrs]['color_bg'] = $EscalaColor["color_bg"];
             GoForAgileOkrs::OrderResultados($row->id_okrs);
             $resultadosVisual = GoForAgileOkrs::ResultadosOKRFiltro($row->id_okrs,$filtro);
+            $array_resultados = array();
             foreach($resultadosVisual as $resultado){
                 $array_resultados[$contKR]["id"] = $resultado->id;
+                $array_resultados[$contKR]["descripcion"] = $resultado->descripcion;
+                $array_resultados[$contKR]["periodo"] = $resultado->periodo;
                 $contKR++;
             }
             $array_okrs[$contOkrs]['kr'] = $array_resultados;

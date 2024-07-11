@@ -5,6 +5,22 @@
 Okrs Organización
 @endsection
 
+@section('styles')
+<style>
+    .pagination {
+        margin: 2px 0;
+        white-space: nowrap;
+        justify-content: flex-end;
+    }
+
+    @media screen and (max-width: 767px) {
+        .pagination {
+            justify-content: left !important;
+        }
+    }
+</style>
+@endsection
+
 @section('headerPage')
 <header class="main-heading">
     <div class="container-fluid">
@@ -61,18 +77,38 @@ Okrs Organización
                                 {{ $okr['anio'] }}: {{ $okr['fecha_inicia'] }} a {{ $okr['fecha_termina'] }} || Publicado por: {{ $okr['nombre_owner'] }}
                             </div>
                         </th>
-                        <th>
-                        @foreach($okr['kr'] as $kr)
-                        {{ $kr["id"] }}
-                        @endforeach
-                        </th>
+
                     </thead>
                 </table>
             </div>
+
             <div class="card-body responsive" id="bodyOKR">
-                <div class="col-md-12 col-sm-12">
-                    <div class="accordion" id="accordionKr_{{ $okr['id_okrs'] }}">
-                        
+                <div class="row gutters">
+                    <div class="col-sm-12">
+                        <div id="accordionIcons" class="accordion-icons" role="tablist">
+                            @foreach($okr['kr'] as $kr)
+                            <div class="card mb-0">
+                                <div class="card-header" role="tab" id="heading{{ $kr['id'] }}">
+                                    <h5 class="mb-0">
+                                        <a data-toggle="collapse" href="#collapse{{ $kr['id'] }}" aria-expanded="false" aria-controls="collapse{{ $kr['id'] }}" class="collapsed">
+                                            Who cen sell items?
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div id="collapse{{ $kr['id'] }}" class="collapse" role="tabpanel" aria-labelledby="heading{{ $kr['id'] }}" data-parent="#accordionIcons">
+                                    <div class="card-body">
+                                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad
+                                        squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa
+                                        nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid
+                                        single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft
+                                        beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice
+                                        lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you
+                                        probably haven't heard of them accusamus labore sustainable VHS.
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -80,10 +116,13 @@ Okrs Organización
     </div>
 </div>
 @endforeach
-<div class="d-flex justify-content-end">
-{{$paginacion->links()}}
+
+<div class="row gutters">
+    <div class="col-md-12 col-sm-12">
+        {{$paginacion->links()}}
+    </div>
 </div>
-@include("modals.modalProfile")
+
 @endsection
 @section('scripts')
 <script>
@@ -92,7 +131,7 @@ Okrs Organización
         $("#navOkrs").addClass("in");
         $("#menuOkrsOrganizacion").addClass("current-page");
         $('.js-example-basic-single').select2();
-    });    
+    });
 </script>
 <script src="{{asset("js/okrs.min.js")}}"></script>
 @endsection

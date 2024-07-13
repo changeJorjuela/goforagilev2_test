@@ -94,16 +94,17 @@ class GoForAgileAdmin extends Model
         foreach($empleado as $row1){
             $profile[$cont]["nombre"] = $row1->nombre;
             $profile[$cont]["foto"] = $row1->foto;
-            $areas = DB::Select("SELECT * FROM Areas WHERE id = $row1->area");
-            if($areas){
-                foreach($areas as $row2){
-                    $profile[$cont]["area"] = $row2->nombre;
-                }                
+            if($row1->area > 0){
+            $areas = DB::Select("SELECT * FROM Areas WHERE id = $row1->area");            
+            foreach($areas as $row2){
+                $profile[$cont]["area"] = $row2->nombre;
+            }                
             }else{
                 $profile[$cont]["area"] = $row1->area;
             }
+            if($row1->id_cargo > 0){
             $cargos = DB::Select("SELECT * FROM Cargos WHERE id = $row1->id_cargo");
-            if($cargos){
+            
                 foreach($cargos as $row3){
                     $profile[$cont]["cargo"] = $row3->nombre;
                 }                
@@ -111,8 +112,9 @@ class GoForAgileAdmin extends Model
                 $profile[$cont]["cargo"] = $row1->cargo;
             }
             if($row1->unidad_corporativa){
+                if($row1->unidad_corporativa > 0){
                 $vp = DB::Select("SELECT * FROM Vicepresidencia WHERE id = $row1->unidad_corporativa");
-                if($vp){
+                
                     foreach($vp as $row4){
                         $profile[$cont]["vicepresidencia"] = $row4->nombre;
                     }                

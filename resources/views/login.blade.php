@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{{asset("template/css/bootstrap.min.css")}}" />
     <link rel="stylesheet" href="{{asset("template/fonts/icomoon/icomoon.css")}}" />
     <link rel="stylesheet" href="{{asset("template/css/main.min.css")}}" />
+    <link rel="stylesheet" href="{{asset("css/toastr.min.css")}}">
 </head>
 
 <body class="login-bg">
@@ -86,6 +87,22 @@
     <script src="{{asset("js/login.js")}}"></script>
     <script src="{{asset("js/jquery.validate.min.js")}}"></script>
     <script src="{{asset("js/additional-methods.min.js")}}"></script>
+    <script src="{{asset("js/toastr.min.js")}}"></script>
+    <script>
+        @if (session("mensaje"))
+            toastr.success("{{ session("mensaje") }}");
+        @endif
+
+        @if (session("precaucion"))
+            toastr.warning("{{ session("precaucion") }}");
+        @endif
+
+        @if (count($errors) > 0)
+            @foreach($errors -> all() as $error)
+                toastr.error("{{ $error }}");
+            @endforeach
+        @endif
+    </script>
 </body>
 
 </html>

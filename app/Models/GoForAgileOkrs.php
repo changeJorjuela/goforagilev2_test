@@ -155,4 +155,22 @@ class GoForAgileOkrs extends Model
         $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Resultados WHERE id_okrs = $id_okr $filtro ORDER BY orden ASC");
         return $ResultadosOKR;
     }
+
+    public static function ComentariosKR($idResultado){
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $ComentariosKR = DB::Select("SELECT * FROM Okrs_Comentarios WHERE id_resultado = $idResultado");
+        return $ComentariosKR;
+    }
+
+    public static function IniciativasKR($id){
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Iniciativas WHERE id_resultado = $id");
+        return $ResultadosOKR;
+    }
+
+    public static function Okrs($id){
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $Okrs = DB::Select("SELECT * FROM Okrs WHERE id = $id");
+        return $Okrs;
+    }
 }

@@ -58,7 +58,7 @@ Okrs Organización
                             <div class="user-profile">{!! $okr['foto'] !!}</div>
                         </th>
                         <th style="width: 75%;font-size: 1rem;align-content: center;">
-                            <b>{{ $okr['objetivo_okr'] }}</b><br>
+                            <h5><b>{{ $okr['objetivo_okr'] }}</b><br></h5>
                             <b>OKR: </b>{{ $okr['tipo'] }}<br>
                             <b>Owner: </b>{{ $okr['nombre_owner'] }}<br>
                             <div class="sub_periodo">
@@ -70,7 +70,7 @@ Okrs Organización
                 </table>
             </div>
 
-            <div class="card-body responsive" id="bodyOKR">
+            <div class="card-body responsive fill_resultados" id="bodyOKR">
                 <div class="row gutters">
                     <div class="col-md-12 col-sm-12">
                         <div id="accordionIcons" class="accordion-icons" role="tablist">
@@ -100,35 +100,37 @@ Okrs Organización
                                 <div id="collapse{{$kr['id']}}" class="collapse" role="tabpanel" aria-labelledby="heading{{$kr['id']}}" data-parent="#accordionIcons">
                                     <div class="card-body">
                                         <div class="row">
-                                            <!-- <div class="col-md-12 table-responsive">
-                                                <table style="width: 100%;" class="display table dt-responsive nowrap">
-                                                    <thead>
-                                                        <th>Responsables</th>
-                                                        <th>Inicia</th>
-                                                        <th>Entrega</th>
-                                                        <th>Días Faltantes</th>
-                                                        <th>Seguimiento</th>
-                                                        <th style="text-align: right !important;">Acciones</th>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>{{ $kr['porcentaje'] }}</td>
-                                                            <td>{{ $kr['porcentaje'] }}</td>
-                                                            <td>{{ $kr['porcentaje'] }}</td>
-                                                            <td>{{ $kr['porcentaje'] }}</td>
-                                                            <td>{{ $kr['porcentaje'] }}</td>
-                                                            <td>{{ $kr['porcentaje'] }}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div> -->
+
                                             <div class="col-md-3"><b>Responsables</b><br>{!! $kr['listaResponsables'] !!}</div>
                                             <div class="col-md-2"><b>Inicia</b><br>{{ $kr['fecha_inicia'] }}</div>
                                             <div class="col-md-2"><b>Entrega</b><br>{{ $kr['fecha_entrega'] }}</div>
                                             <div class="col-md-2"><b>Días Faltantes</b>{!! $kr['porcentaje_dias'] !!}Faltan {{ $kr['dias_faltantes'] }} días</div>
-                                            <div class="col-md-1"><b>Seguimiento</b>{!! $kr['avance'] !!}</div>
-                                            <div class="col-md-2"><b>Acciones</b></div>
+                                            <div class="col-md-2"><b>Seguimiento</b>{!! $kr['avance'] !!}</div>
+                                            <div class="col-md-1" style="text-align: end;"><b>Acciones</b><br>{!! $kr['acciones'] !!}</div>
                                         </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <!-- <div class="row">
+                                            <div class="col-md-12 .col-sm-12">
+                                                <h5><b>Iniciativas</b></h5>
+                                            </div>
+                                        </div> -->
+                                        <div class="row">
+                                        <div class="col-md-12 .col-sm-12">
+                                            <table class="display table nowrap" style="width:100%">
+                                                <thead>
+                                                    <th>Iniciativa</th>
+                                                    <th>Responsables</th>
+                                                    <th>Entrega</th>
+                                                    <th>Meta</th>
+                                                    <th>Seguimiento</th>
+                                                    <th>% Iniciativa</th>
+                                                    <th style="text-align: end;">Acciones</th>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +143,13 @@ Okrs Organización
     </div>
 </div>
 @endforeach
-
+@handheld
+<div class="row">
+    <div class="col-md-2">
+        hello
+    </div>
+</div>
+@endhandheld
 <div class="row gutters">
     <div class="col-md-12 col-sm-12">
         {{$paginacion->links()}}
@@ -158,7 +166,7 @@ Okrs Organización
         $("#menuOkrsOrganizacion").addClass("current-page");
         $('.js-example-basic-single').select2();
         $(".pagination").addClass("table-responsive mb-2");
-        
+
         $('table.display').DataTable({
             columnDefs: [{
                     responsivePriority: 1,

@@ -17,7 +17,7 @@ class OkrsController extends Controller
         if (Session::get('anio_fill') == Session::get('anio_curso')) {
             $congelar_okrs = false;
         }
-        
+
         $porPagina = 10;
         $paginaActual = LengthAwarePaginator::resolveCurrentPage('pagina');
         // dd(LengthAwarePaginator::resolveCurrentPage('pagina'));
@@ -114,10 +114,10 @@ class OkrsController extends Controller
             $array_okrs[$contOkrs]['color_bg'] = $EscalaColor["color_bg"];
             GoForAgileOkrs::OrderResultados($row->id_okrs);
 
-            $resultados = OkrsController::Resultados($row->id_okrs, $filtro,$congelar_okrs, $row->tipo_role, $array_okrs[$contOkrs]['anio']);
-            
+            $resultados = OkrsController::Resultados($row->id_okrs, $filtro, $congelar_okrs, $row->tipo_role, $array_okrs[$contOkrs]['anio']);
+
             $array_okrs[$contOkrs]['tipo_role'] = $row->tipo_role;
-        
+
             $array_okrs[$contOkrs]['kr'] = $resultados;
             $contOkrs++;
         }
@@ -136,9 +136,10 @@ class OkrsController extends Controller
         ]);
     }
 
-    public static function Resultados($idOkr, $filtro,$congelar_okrs,$okrTipoRole,$okrAnio){
+    public static function Resultados($idOkr, $filtro, $congelar_okrs, $okrTipoRole, $okrAnio)
+    {
         $resultadosVisual = GoForAgileOkrs::ResultadosOKRFiltro($idOkr, $filtro);
-        
+
         $array_resultados = array();
         $contKR = 0;
         foreach ($resultadosVisual as $resultado) {
@@ -151,20 +152,20 @@ class OkrsController extends Controller
             $array_resultados[$contKR]['id_okrs'] = $resultado->id_okrs;
             $array_resultados[$contKR]['orden'] = $resultado->orden;
             $porcentaje_kr = 0;
-            if($resultado->meta == 0 || $resultado->meta == ''){
+            if ($resultado->meta == 0 || $resultado->meta == '') {
                 $porcentaje_kr = 0;
-            }else if($resultado->avance == 0 || $resultado->avance == ''){
+            } else if ($resultado->avance == 0 || $resultado->avance == '') {
                 $porcentaje_kr = 0;
-            }else{
-                if(($resultado->avance > 0 && $resultado->meta > 0) && (intval($resultado->avance) && intval($resultado->meta))){
+            } else {
+                if (($resultado->avance > 0 && $resultado->meta > 0) && (intval($resultado->avance) && intval($resultado->meta))) {
                     $porcentaje_kr = (round($resultado->avance) * 100) / round($resultado->meta);
                     if ($resultado->tendencia == 2) {
                         $porcentaje_kr = ((round($resultado->meta) / round($resultado->avance)) * 100);
                     }
-                }else{
+                } else {
                     $porcentaje_kr = 0;
-                }                
-            }                
+                }
+            }
 
             if (is_infinite($porcentaje_kr)) {
                 $porcentaje_kr = 0;
@@ -218,47 +219,9 @@ class OkrsController extends Controller
 
             $array_lista_kr = explode(",", $resultado->responsables);
 
-            $lista_resp_kr = "";
-            foreach ($array_lista_kr as $id_resp) {
-                // dd($array_lista_kr);
-                if ($id_resp != '') {
+            $listaResponsables = OkrsController::ListaResponsables($array_lista_kr);
 
-                    if ($id_resp == Session::get('id_user')) {
-                        $validar_edit = true;
-                    }
-
-                    $dataEmple = GoForAgileAdmin::CardProfile($id_resp);
-                    // dd($dataEmple);
-                    foreach ($dataEmple as $valueEmp) {
-                        if (!$valueEmp["foto"]) {
-                            $valueEmp["foto"] = "img_default.jpg";
-                        }
-                        $lista_resp_kr .= '<article class="card__article_responsables">
-        <div class="card__profile_responsables">
-           <img loading="lazy" src="../../recursos/' . $valueEmp["foto"] . '" class="profile-thumb" title="' . $valueEmp["nombre"] . '" style="width:35px;height:35px;border-radius: 50%;">
-        </div>
-        <div class="card__tooltip_responsables">
-           <div class="card__content_responsables">      
-              <div class="card__data_responsables">
-                 <div class="card__image_responsables">
-                    <div class="card__mask_responsables">
-                       <img src="../../recursos/' . $valueEmp["foto"] . '" alt="image" class="card__img_responsables">
-                    </div>                        
-                 </div>
-                 <h2 class="card__name_responsables">' . $valueEmp["nombre"] . '</h2><br>
-                 <h3 class="card__profession_responsables">' . $valueEmp["cargo"] . '</h3><br>
-                 <h3 class="card__profession_responsables">' . $valueEmp["area"] . '</h3><br>
-                 <h3 class="card__profession_responsables">' . $valueEmp["vicepresidencia"] . '</h3>
-              </div>
-           </div>
-        </div>
-     </article>';
-                        // $lista_resp_kr .= '<a href="javascript:Profile(' . $id_resp . ',1)"  id="profileOkr"><img loading="lazy" src="../../recursos/' . $valueEmp->foto . '" class="foto_min" title="' . $valueEmp->nombre . '" style="width: 35px !important;height: 35px !important;"></a>';
-                    }
-                }
-            }
-
-            $array_resultados[$contKR]["listaResponsables"] = $lista_resp_kr;
+            $array_resultados[$contKR]["listaResponsables"] = $listaResponsables;
             $array_resultados[$contKR]['fecha_inicia'] = GoForAgileAdmin::FechaAmigable($resultado->fecha_inicia);
             $array_resultados[$contKR]['fecha_entrega'] = GoForAgileAdmin::FechaAmigable($resultado->fecha_entrega);
             $array_resultados[$contKR]['avance'] = '<input type="number" name="" class="form-control form-control-sm mb-0" value="' . $resultado->avance . '" onChange="Guardar_Avance_Resultado(this.value, ' . $resultado->id . ',' . $idOkr . ')" >';
@@ -266,10 +229,10 @@ class OkrsController extends Controller
             $fecha_inicia = strtotime($resultado->fecha_inicia);
             $fecha_entrega = strtotime($resultado->fecha_entrega);
             $fecha_hoy = time();
-            
+
             $faltantes1 = floor(($fecha_entrega - $fecha_inicia) / (60 * 60 * 24));
-            $faltantes2 = (floor(($fecha_entrega - $fecha_hoy) / (60 * 60 * 24))+1);
-            $porcentaje_faltante = ($faltantes2 / $faltantes1)*100;
+            $faltantes2 = (floor(($fecha_entrega - $fecha_hoy) / (60 * 60 * 24)) + 1);
+            $porcentaje_faltante = ($faltantes2 / $faltantes1) * 100;
             // dd($porcentaje_faltante);
             // echo $porcentaje_faltante."<br>";
             if (is_nan($porcentaje_faltante)) {
@@ -288,7 +251,7 @@ class OkrsController extends Controller
             }
 
             $escala_faltante = GoForAgileOkrs::EscalaColor(round($porcentaje_faltante), Session::get('id_empresa'));
-            $back_color_faltante = "background-color:" . $escala_faltante['color_bg'] . " !important";                
+            $back_color_faltante = "background-color:" . $escala_faltante['color_bg'] . " !important";
 
             $porcentajeDias = '<div class="progress sm no-margin">
                                 <div class="progress-bar" role="progressbar" aria-valuenow="' . $porcentaje_faltante . '" aria-valuemin="0" aria-valuemax="100" style="width: ' . $porcentaje_faltante . '%; color: ' . $color_text . '; ' . $back_color_faltante . '">										
@@ -312,7 +275,8 @@ class OkrsController extends Controller
             $accion_subir = '<a id="aDropDownItem" data-bs-toggle="tooltip" href="javascript:PosicionResultado(' . $array_resultados[$contKR]['id'] . ',1,' . $array_resultados[$contKR]['id_okrs'] . ')" class="dropdown-item"><span class="fas fa-sort-up"></span> &nbsp;&nbsp;Subir Resultado Clave</a>';
             $accion_bajar = '<a id="aDropDownItem" data-bs-toggle="tooltip" href="javascript:PosicionResultado(' . $array_resultados[$contKR]['id'] . ',2,' . $array_resultados[$contKR]['id_okrs'] . ')" class="dropdown-item"><span class="fas fa-sort-down"></span> &nbsp;&nbsp;Bajar Resultado Clave</a>';
             $accion_reubicar = '<a id="aDropDownItem" data-bs-toggle="tooltip" href="javascript:ReubicarResultado(' . $array_resultados[$contKR]['id'] . ',' . $array_resultados[$contKR]['orden'] . ',' . $array_resultados[$contKR]['id_okrs'] . ')" class="dropdown-item"><span class="fas fa-sort"></span> &nbsp;&nbsp;Reubicar Resultado Clave</a>';
-            $array_resultados[$contKR]['acciones'] = '<div class="dropdown dropdwon-hover">
+            if ($congelar_okrs == false) {
+                $array_resultados[$contKR]['acciones'] = '<div class="dropdown dropdwon-hover">
                                                                     <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="boton_accion">
                                                                     . . .
                                                                     </button>
@@ -325,23 +289,174 @@ class OkrsController extends Controller
                                                                       <li>' . $accion_reubicar . '</li>										
                                                                       </ul>
                                                                   </div>';
-            $iniciativas = OkrsController::Iniciativas($array_resultados[$contKR]['id']);            
+            } else {
+                $array_resultados[$contKR]['acciones'] = "";
+            }
+            $iniciativas = OkrsController::Iniciativas($resultado->id, $resultado->tendencia, $congelar_okrs, $okrTipoRole, $idOkr);
             $array_resultados[$contKR]['iniciativas'] = $iniciativas;
             $contKR++;
         }
         return $array_resultados;
     }
 
-    public static function Iniciativas($idResultado){
+    public static function Iniciativas($idResultado, $tendencia, $congelar_okrs, $tipoRole, $idOkr)
+    {
         $array_iniciativas = array();
-        $contIni = 0; 
+        $contIni = 0;
         $Iniciativas = GoForAgileOkrs::IniciativasKR($idResultado);
-        foreach($Iniciativas as $iniciativa){
+        foreach ($Iniciativas as $iniciativa) {
             $array_iniciativas[$contIni]["id"] = $iniciativa->id;
             $array_iniciativas[$contIni]["descripcion"] = $iniciativa->descripcion;
             $array_iniciativas[$contIni]["meta"] = $iniciativa->meta;
+
+            if (!isset($iniciativa->tendencia)) {
+                GoForAgileOkrs::ActualizaTendenciaIniciativa($tendencia, $iniciativa->id);
+            }
+
+            $queryPlanes = GoForAgileOkrs::PlanesIniciativa($iniciativa->id);
+
+            $queryPlanesRealizado = GoForAgileOkrs::PlanesIniciativaRealizado($iniciativa->id);
+
+            $queryDocumentos = GoForAgileOkrs::DocumentosIniciativa($iniciativa->id);
+
+            $queryComentario = GoForAgileOkrs::ComentariosIniciativa($iniciativa->id);
+
+            $accion_comentario = '<a id="aDropDownItem" data-bs-toggle="tooltip" href="javascript:Ver_Comentarios_Iniciativa(' . $iniciativa->id . ',' . Session::get('id_user') . ')" class="dropdown-item"><span class="fas fa-comments"></span>  &nbsp;&nbsp;&nbsp;Comentarios ' . count($queryComentario) . '</a>';
+
+            $select = $iniciativa->avance . "%";
+            if ($congelar_okrs == false) {
+                if ($tipoRole == 1 || $tipoRole == 2) {
+
+                    $select = '<input type="number" class="form-control form-control-sm mb-0" onChange="Guardar_Avance_Iniciativa(this.value, ' . $iniciativa->id . ',' . $idOkr . ',' . $idResultado . ',' . Session::get('id_empresa') . ',' . Session::get('id_user') . ')" value="' . $iniciativa->avance . '" > ';
+                }
+            } else {
+                $select = $iniciativa->avance . "%";
+            }
+
+            $bt_editar  = $accion_ver_planes = $accion_documentos = $accion_editar_iniciativa = '';
+            if (($tipoRole == 1 || $tipoRole == 2) && $congelar_okrs == false) {
+                $accion_editar_iniciativa = '<li><a id="aDropDownItem" data-bs-toggle="tooltip" href="javascript:VerIniciativa(' . $idResultado . ', ' . $iniciativa->id . ', ' . $tipoRole . ' )" class="dropdown-item"><span class="fas fa-spell-check"></span>   &nbsp;&nbsp;&nbsp;Editar Iniciativa</a></li>';
+            }
+
+            $accion_ver_planes = '<a id="aDropDownItem" data-bs-toggle="tooltip" href="javascript:Ver_Planes_accion( ' . $iniciativa->id . ', ' . $tipoRole . ' )" class="dropdown-item" id="iniciativa_' . $iniciativa->id . '"><span class="fas fa-tasks"></span>   &nbsp;&nbsp;&nbsp;Planes de Acción ' . count($queryPlanes) . ' / ' . count($queryPlanesRealizado) . '</a>';
+
+            $accion_documentos = '<a id="aDropDownItem" data-bs-toggle="tooltip" href="javascript:Ver_Documentos( ' . $iniciativa->id . ', ' . $tipoRole . ' )" class="dropdown-item" id="documento_' . $iniciativa->id . '"><span class="fas fa-file-alt"></span>   &nbsp;&nbsp;&nbsp;Documentos ' . count($queryDocumentos) . '</a>';
+
+            $porciento = ($iniciativa->avance * 100) / $iniciativa->meta;
+
+            if ($iniciativa->tendencia == 2) {
+                $porciento = (($iniciativa->meta / $iniciativa->avance) * 100);
+            }
+
+            $porciento = round($porciento);
+
+            if (is_nan($porciento) || is_infinite($porciento)) {
+                $porciento = 0;
+            }
+
+            if ($porciento > 100) {
+                $porcentaje_barra = 100;
+            } else {
+                $porcentaje_barra = $porciento;
+            }
+
+            $escala_ini = GoForAgileOkrs::EscalaColor($porciento, Session::get('id_empresa'));
+            $back_color_ini = "background-color:" . $escala_ini['color_bg'] . " !important";
+            $txt_rango_meta_inic = $escala_ini['txt_subtitulo'];
+
+            $porcentajeBar = '<div class="progress sm no-margin" title="' . $txt_rango_meta_inic . '">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="' . $porciento . '" aria-valuemin="0" aria-valuemax="100" style="width: ' . $porcentaje_barra . '%; color: ' . $escala_ini['color_text'] . '; ' . $back_color_ini . '">
+                                    <span class="sr-only">' . round($porciento) . '% Completado (success)</span>
+                                </div>
+                            </div>';
+
+            $array_iniciativas[$contIni]["porcentajeBarra"] = $porcentajeBar;
+            $array_iniciativas[$contIni]["porcentaje"] = round($porciento);
+
+
+            $array_lista = explode(",", $iniciativa->responsables);
+            $listaResponsables = OkrsController::ListaResponsables($array_lista);
+
+            if (Session::get('role_plataforma') == 1) {
+                $validar_edit = true;
+            }
+            if ($tipoRole == 1) {
+                $validar_edit = true;
+            }
+
+            if ($validar_edit == false) {
+                if ($iniciativa->avance) {
+                    $select = $iniciativa->avance . "%";
+                } else {
+                    $select = "0%";
+                }
+            }
+
+            if ($congelar_okrs == false) {
+                
+                $acciones_ini = '
+                <button class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="boton_accion">. . .</button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            '.$accion_comentario.'
+                            '.$accion_ver_planes.'
+                            '.$accion_documentos.'
+                            '.$accion_editar_iniciativa.'
+                        </div>';
+            } else {
+                $acciones_ini = '';
+            }
+
+            $array_iniciativas[$contIni]["avance"] = $select;
+            $array_iniciativas[$contIni]["entrega"] = GoForAgileAdmin::FechaAmigable($iniciativa->fecha_entrega);
+            $array_iniciativas[$contIni]["responsables"] = $listaResponsables;
+            $array_iniciativas[$contIni]["acciones"] = $acciones_ini;
             $contIni++;
         }
         return $array_iniciativas;
+    }
+
+    public static function ListaResponsables($array_list)
+    {
+        $lista_resp_kr = "";
+        foreach ($array_list as $id_resp) {
+            // dd($array_lista_kr);
+            if ($id_resp != '') {
+
+                if ($id_resp == Session::get('id_user')) {
+                    $validar_edit = true;
+                }
+
+                $dataEmple = GoForAgileAdmin::CardProfile($id_resp);
+                // dd($dataEmple);
+                foreach ($dataEmple as $valueEmp) {
+                    if (!$valueEmp["foto"]) {
+                        $valueEmp["foto"] = "img_default.jpg";
+                    }
+                    $lista_resp_kr .= '<article class="card__article_responsables">
+    <div class="card__profile_responsables">
+       <img loading="lazy" src="../../recursos/' . $valueEmp["foto"] . '" class="profile-thumb" title="' . $valueEmp["nombre"] . '" style="width:35px;height:35px;border-radius: 50%;">
+    </div>
+    <div class="card__tooltip_responsables">
+       <div class="card__content_responsables">      
+          <div class="card__data_responsables">
+             <div class="card__image_responsables">
+                <div class="card__mask_responsables">
+                   <img src="../../recursos/' . $valueEmp["foto"] . '" alt="image" class="card__img_responsables">
+                </div>                        
+             </div>
+             <h2 class="card__name_responsables">' . $valueEmp["nombre"] . '</h2><br>
+             <h3 class="card__profession_responsables">' . $valueEmp["cargo"] . '</h3><br>
+             <h3 class="card__profession_responsables">' . $valueEmp["area"] . '</h3><br>
+             <h3 class="card__profession_responsables">' . $valueEmp["vicepresidencia"] . '</h3>
+          </div>
+       </div>
+    </div>
+ </article>';
+                    // $lista_resp_kr .= '<a href="javascript:Profile(' . $id_resp . ',1)"  id="profileOkr"><img loading="lazy" src="../../recursos/' . $valueEmp->foto . '" class="foto_min" title="' . $valueEmp->nombre . '" style="width: 35px !important;height: 35px !important;"></a>';
+                }
+            }
+        }
+
+        return $lista_resp_kr;
     }
 }

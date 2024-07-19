@@ -10,7 +10,7 @@
   }
 }
 
-#accordionIcons a {
+#accordionIcons a,#datosIniciativas, #datosResultados {
   color: black !important;
 }
 
@@ -392,22 +392,28 @@
   box-shadow: none !important;
 }
 
-#menu_acciones a:before {
+#menu_acciones a:before,
+#menu_acciones_iniciativa a:before,
+#aDropDownItem:before {
   content: none !important;
 }
 
 #menu_acciones:before,
-#menu_acciones:after {
+#menu_acciones:after,
+#menu_acciones_iniciativa:before,
+#menu_acciones_iniciativa:after,
+#aDropDownItem:after {
   content: none !important;
 }
 
 #menu_acciones,
+#menu_acciones_iniciativa,
 #menu_acciones>li>a {
-  font-size: 14px !important;
+  font-size: 12px !important;
   color: black !important;
 }
 
-.dropdown-toggle::after {
+.dropdown-toggle::after,.dropdown-menu:before {
   display: none !important;
 }
 
@@ -415,6 +421,25 @@
   left: -50px;
 }
 
-.card-header, .card-footer, .card-body{
+.card-header,
+.card-footer,
+.card-body {
   border-bottom: 1px none #ebedf5 !important;
+  font-size: 0.9rem;
+}
+
+#IniciativasKR {
+  width: 100% !important;
+  font-size: 0.9rem;
+  overflow-y: clip;
+}
+
+#IniciativasKR thead tr {
+  font-weight: 700;
+  font-size: 12.5px !important;
+  border-style: hidden;
+}
+
+#IniciativasKR tbody tr {
+  border-style: hidden;
 }

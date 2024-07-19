@@ -10,70 +10,14 @@ class GoForAgileOkrs extends Model
 {
     protected $connection = 'mysql-goforagile_okrs';
 
-    public static function EscalaColor($porcentaje, $id_empresa)
-    {
-        DB::setDefaultConnection("mysql-goforagile_admin");
-
-        $Escala = DB::Select("SELECT * FROM Escala_Medicion WHERE id_empresa = $id_empresa");
-        foreach ($Escala as $value) {
-            $Porcentaje1 = $value->porcentaje_uno;
-            $Porcentaje2 = $value->porcentaje_dos;
-            $Porcentaje3 = $value->porcentaje_tres;
-            $Porcentaje4 = $value->porcentaje_cuatro;
-            $Porcentaje5 = $value->porcentaje_cinco;
-            $Porcentaje6 = $value->porcentaje_seis;
-            $Porcentaje7 = $value->porcentaje_siete;
-            $Subtitulo1 = $value->subtitulo_uno;
-            $Subtitulo2 = $value->subtitulo_dos;
-            $Subtitulo3 = $value->subtitulo_tres;
-            $Subtitulo4 = $value->subtitulo_cuatro;
-            $Subtitulo5 = $value->subtitulo_cinco;
-        }
-
-        $color_bg = "#FF0000";
-        $color_text = "#000000";
-        $escala = array();
-
-        if ($porcentaje >= $Porcentaje1 && $porcentaje < $Porcentaje3) {
-            $color_bg = "#FF0000";
-            $txt_subtitulo = $Subtitulo1;
-            $color_text = "#F7F7F7";
-        }
-        if ($porcentaje >= $Porcentaje3 && $porcentaje < $Porcentaje5) {
-            $color_bg = "#FFF200";
-            $txt_subtitulo = $Subtitulo2;
-        }
-        if ($porcentaje >= $Porcentaje5 && $porcentaje < $Porcentaje7) {
-            $color_bg = "#95FA03";
-            $txt_subtitulo = $Subtitulo3;
-        }
-        if ($porcentaje >= $Porcentaje7 && $porcentaje <= 100) {
-            $color_bg = "#14F209";
-            $txt_subtitulo = $Subtitulo4;
-        }
-        // if( $porcentaje == 100 ){
-        // 	$color_bg = "#0DF205";
-        // 	$txt_subtitulo = $dataEscala['subtitulo_cinco'];
-        // }
-        if ($porcentaje > 100) {
-            $color_bg = "#00D30A";
-            $txt_subtitulo = $Subtitulo5;
-        }
-
-        $escala['color_bg'] = $color_bg;
-        $escala['color_text'] = $color_text;
-        $escala['txt_subtitulo'] = $txt_subtitulo;
-
-        return $escala;
-    }
-
+    //OKRS
     public static function OkrsOrganizacion($id_empresa, $porPagina, $offset)
     {
         $adicional = "";
-        if($porPagina){
+        if ($porPagina) {
             $adicional .= " LIMIT $porPagina";
         }
-        if($offset){
+        if ($offset) {
             $adicional .= " OFFSET $offset";
         }
         DB::setDefaultConnection("mysql-goforagile_okrs");
@@ -98,7 +42,15 @@ class GoForAgileOkrs extends Model
 		");
         return $OkrsOrganizacion;
     }
+    public static function Okrs($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $Okrs = DB::Select("SELECT * FROM Okrs WHERE id = $id");
+        return $Okrs;
+    }
 
+
+    //RESULTADOS
     public static function ResultadosOKR($id_okr)
     {
         $suma_resultado = 0;
@@ -156,21 +108,111 @@ class GoForAgileOkrs extends Model
         return $ResultadosOKR;
     }
 
-    public static function ComentariosKR($idResultado){
+    public static function ComentariosKR($idResultado)
+    {
         DB::setDefaultConnection("mysql-goforagile_okrs");
         $ComentariosKR = DB::Select("SELECT * FROM Okrs_Comentarios WHERE id_resultado = $idResultado");
         return $ComentariosKR;
     }
 
-    public static function IniciativasKR($id){
+
+    //EXTRAS
+    public static function EscalaColor($porcentaje, $id_empresa)
+    {
+        DB::setDefaultConnection("mysql-goforagile_admin");
+
+        $Escala = DB::Select("SELECT * FROM Escala_Medicion WHERE id_empresa = $id_empresa");
+        foreach ($Escala as $value) {
+            $Porcentaje1 = $value->porcentaje_uno;
+            $Porcentaje2 = $value->porcentaje_dos;
+            $Porcentaje3 = $value->porcentaje_tres;
+            $Porcentaje4 = $value->porcentaje_cuatro;
+            $Porcentaje5 = $value->porcentaje_cinco;
+            $Porcentaje6 = $value->porcentaje_seis;
+            $Porcentaje7 = $value->porcentaje_siete;
+            $Subtitulo1 = $value->subtitulo_uno;
+            $Subtitulo2 = $value->subtitulo_dos;
+            $Subtitulo3 = $value->subtitulo_tres;
+            $Subtitulo4 = $value->subtitulo_cuatro;
+            $Subtitulo5 = $value->subtitulo_cinco;
+        }
+
+        $color_bg = "#FF0000";
+        $color_text = "#000000";
+        $escala = array();
+
+        if ($porcentaje >= $Porcentaje1 && $porcentaje < $Porcentaje3) {
+            $color_bg = "#FF0000";
+            $txt_subtitulo = $Subtitulo1;
+            $color_text = "#F7F7F7";
+        }
+        if ($porcentaje >= $Porcentaje3 && $porcentaje < $Porcentaje5) {
+            $color_bg = "#FFF200";
+            $txt_subtitulo = $Subtitulo2;
+        }
+        if ($porcentaje >= $Porcentaje5 && $porcentaje < $Porcentaje7) {
+            $color_bg = "#95FA03";
+            $txt_subtitulo = $Subtitulo3;
+        }
+        if ($porcentaje >= $Porcentaje7 && $porcentaje <= 100) {
+            $color_bg = "#14F209";
+            $txt_subtitulo = $Subtitulo4;
+        }
+        // if( $porcentaje == 100 ){
+        // 	$color_bg = "#0DF205";
+        // 	$txt_subtitulo = $dataEscala['subtitulo_cinco'];
+        // }
+        if ($porcentaje > 100) {
+            $color_bg = "#00D30A";
+            $txt_subtitulo = $Subtitulo5;
+        }
+
+        $escala['color_bg'] = $color_bg;
+        $escala['color_text'] = $color_text;
+        $escala['txt_subtitulo'] = $txt_subtitulo;
+
+        return $escala;
+    }
+
+
+    //INICIATIVAS
+    public static function IniciativasKR($id)
+    {
         DB::setDefaultConnection("mysql-goforagile_okrs");
         $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Iniciativas WHERE id_resultado = $id");
         return $ResultadosOKR;
     }
 
-    public static function Okrs($id){
+    public static function PlanesIniciativa($id)
+    {
         DB::setDefaultConnection("mysql-goforagile_okrs");
-        $Okrs = DB::Select("SELECT * FROM Okrs WHERE id = $id");
-        return $Okrs;
+        $PlanesIniciativa = DB::Select("SELECT * FROM Okrs_Actividades WHERE id_iniciativa = $id ");
+        return $PlanesIniciativa;
+    }
+
+    public static function PlanesIniciativaRealizado($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $PlanesIniciativaRealizado = DB::Select("SELECT * FROM Okrs_Actividades WHERE id_iniciativa = $id AND checked = 'true'");
+        return $PlanesIniciativaRealizado;
+    }
+
+    public static function DocumentosIniciativa($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $DocumentosIniciativa = DB::Select("SELECT * FROM Okrs_Documentos WHERE id_iniciativa = $id");
+        return $DocumentosIniciativa;
+    }
+
+    public static function ComentariosIniciativa($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $ComentariosIniciativa = DB::Select("SELECT * FROM Okrs_Comentarios_Iniciativas WHERE id_iniciativa = $id");
+        return $ComentariosIniciativa;
+    }
+
+    public static function ActualizaTendenciaIniciativa($tendencia,$id){
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        DB::Update("UPDATE Okrs_Iniciativas SET tendencia = $tendencia, updated_at = NOW() WHERE id = $id");
     }
 }

@@ -16,7 +16,7 @@
             </div>
             <div class="col-md-5 col-sm-3 col-4">
                 <ul class="header-actions">
-                    <li>
+                    <li id="textRol">
                         <a href="" id="todos" data-toggle="dropdown" aria-haspopup="true">
                             <h5 id="HeaderRol"><b>{!! Session::get('NombreRol') !!}</b></h5>
                         </a>

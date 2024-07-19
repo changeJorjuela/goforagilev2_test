@@ -73,14 +73,14 @@ Okrs Organización
             <div class="card-body responsive fill_resultados" id="bodyOKR">
                 <div class="row gutters">
                     <div class="col-md-12 col-sm-12">
-                        <div id="accordionIcons" class="accordion-icons" role="tablist">
+                        <div id="accordionIcons{{$okr['id_okrs']}}" class="accordion-icons" role="tablist">
                             @foreach($okr['kr'] as $kr)
                             <div class="card mb-0">
                                 <div class="card-header" role="tab" id="heading{{$kr['id']}}">
                                     <div class="row">
                                         <div class="col-md-7">
                                             <h5 class="fill_resultados">
-                                                <a class="collapsed" data-toggle="collapse" href="#collapse{{$kr['id']}}" aria-expanded="false" aria-controls="collapse{{$kr['id']}}">
+                                                <a class="collapsed" data-toggle="collapse" href="#collapseKr{{$kr['id']}}" aria-expanded="false" aria-controls="collapseKr{{$kr['id']}}" id="datosResultados">
                                                     {{ $kr['periodo'] }}&nbsp;&nbsp;|&nbsp;&nbsp;{{ $kr['descripcion'] }}
                                                 </a>
                                             </h5>
@@ -97,41 +97,146 @@ Okrs Organización
                                         </div>
                                     </div>
                                 </div>
-                                <div id="collapse{{$kr['id']}}" class="collapse" role="tabpanel" aria-labelledby="heading{{$kr['id']}}" data-parent="#accordionIcons">
+                                <div id="collapseKr{{$kr['id']}}" class="collapse" role="tabpanel" aria-labelledby="heading{{$kr['id']}}" data-parent="#accordionIcons{{$okr['id_okrs']}}">
                                     <div class="card-body">
                                         <div class="row">
-
+                                            @handheld
+                                            <div class="col md-12">
+                                                <table class="table table-sm" id="TableKrMovil">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><b>Responsables</b></td>
+                                                            <td clase="detalleKrIniciativa">{!! $kr['listaResponsables'] !!}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><b>Inicia</b></td>
+                                                            <td clase="detalleKrIniciativa">{{ $kr['fecha_inicia'] }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><b>Entrega</b></td>
+                                                            <td clase="detalleKrIniciativa">{{ $kr['fecha_entrega'] }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><b>Días Faltantes</b></td>
+                                                            <td clase="detalleKrIniciativa">{!! $kr['porcentaje_dias'] !!}Faltan {{ $kr['dias_faltantes'] }} días</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><b>Seguimiento</b></td>
+                                                            <td clase="detalleKrIniciativa">{!! $kr['avance'] !!}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><b>Acciones</b></td>
+                                                            <td clase="detalleKrIniciativa">{!! $kr['acciones'] !!}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            @elsehandheld
                                             <div class="col-md-3"><b>Responsables</b><br>{!! $kr['listaResponsables'] !!}</div>
                                             <div class="col-md-2"><b>Inicia</b><br>{{ $kr['fecha_inicia'] }}</div>
                                             <div class="col-md-2"><b>Entrega</b><br>{{ $kr['fecha_entrega'] }}</div>
                                             <div class="col-md-2"><b>Días Faltantes</b>{!! $kr['porcentaje_dias'] !!}Faltan {{ $kr['dias_faltantes'] }} días</div>
                                             <div class="col-md-2"><b>Seguimiento</b>{!! $kr['avance'] !!}</div>
-                                            <div class="col-md-1" style="text-align: end;"><b>Acciones</b><br>{!! $kr['acciones'] !!}</div>
+                                            <div class="col-md-1" style="text-align: right;"><b>Acciones</b><br>{!! $kr['acciones'] !!}</div>
+                                            @endhandheld
                                         </div>
                                     </div>
+                                    @if($kr['iniciativas'])
                                     <div class="card-footer">
-                                        <!-- <div class="row">
-                                            <div class="col-md-12 .col-sm-12">
-                                                <h5><b>Iniciativas</b></h5>
-                                            </div>
-                                        </div> -->
+                                        @handheld
                                         <div class="row">
-                                        <div class="col-md-12 .col-sm-12">
-                                            <table class="display table nowrap" style="width:100%">
-                                                <thead>
-                                                    <th>Iniciativa</th>
-                                                    <th>Responsables</th>
-                                                    <th>Entrega</th>
-                                                    <th>Meta</th>
-                                                    <th>Seguimiento</th>
-                                                    <th>% Iniciativa</th>
-                                                    <th style="text-align: end;">Acciones</th>
-                                                </thead>
-                                            </table>
-                                        </div>
-                                        </div>
+                                            <div class="col-md-12 col-sm-12">
+                                                <div id="accordionIcons{{$kr['id']}}" class="accordion-icons" role="tablist">
+                                                    @foreach($kr['iniciativas'] as $iniciativa)
+                                                    <div class="card mb-0">
+                                                        <div class="card-header" role="tab" id="header{{$kr['id']}}_{{$iniciativa['id']}}">
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <h5 class="fill_iniciativas">
+                                                                        <a class="collapsed" data-toggle="collapse" href="#collapsin{{$iniciativa['id']}}" aria-expanded="false" aria-controls="collapsin{{$iniciativa['id']}}" id="datosIniciativas">
+                                                                            {{$iniciativa['descripcion']}}
+                                                                        </a>
+                                                                    </h5>
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <h5 class="fill_iniciativas">
+                                                                        Meta:&nbsp;{{$iniciativa['meta']}}
+                                                                    </h5>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <h5 class="fill_iniciativas">
+                                                                    {!! $iniciativa['porcentajeBarra'] !!}&nbsp;&nbsp;{{ $iniciativa['porcentaje'] }} %
+                                                                    </h5>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="collapsin{{$iniciativa['id']}}" class="collapse" role="tabpanel" aria-labelledby="header{{$kr['id']}}_{{$iniciativa['id']}}" data-parent="#accordionIcons{{$kr['id']}}">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col md-12">
+                                                                        <table class="table table-sm" id="TableIniciativaMovil">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td><b>Responsables</b></td>
+                                                                                    <td clase="detalleKrIniciativa">{!!$iniciativa['responsables']!!}</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><b>Entrega</b></td>
+                                                                                    <td clase="detalleKrIniciativa">{{$iniciativa['entrega']}}</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><b>Seguimiento</b></td>
+                                                                                    <td clase="detalleKrIniciativa">{!!$iniciativa['avance']!!}</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td><b>Acciones</b></td>
+                                                                                    <td clase="detalleKrIniciativa" style="text-align: right;text-align:-webkit-right;">{!! $iniciativa['acciones'] !!}</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @elsehandheld
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <table class="table table-responsive" id="IniciativasKR">
+                                                    <thead>
+                                                        <th style="width: 50% !important;"><b>Iniciativa</b></th>
+                                                        <th style="width: 10% !important;"><b>Responsables</b></th>
+                                                        <th style="width: 10% !important;"><b>Entrega</b></th>
+                                                        <th style="width: 5% !important;"><b>Meta</b></th>
+                                                        <th style="width: 10% !important;"><b>Seguimiento</b></th>
+                                                        <th style="width: 15% !important;"><b>% Iniciativa</b></th>
+                                                        <th style="text-align: right;width: 10% !important;"><b>Acciones</b></th>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($kr['iniciativas'] as $iniciativa)
+                                                        <tr>
+                                                            <td style="width: 50% !important;">{{$iniciativa['descripcion']}}</td>
+                                                            <td style="width: 10% !important;">{!!$iniciativa['responsables']!!}</td>
+                                                            <td style="width: 10% !important;">{{$iniciativa['entrega']}}</td>
+                                                            <td style="width: 5% !important;">{{$iniciativa['meta']}}</td>
+                                                            <td style="width: 10% !important;">{!!$iniciativa['avance']!!}</td>
+                                                            <td style="width: 15% !important;">{!! $iniciativa['porcentajeBarra'] !!}&nbsp;&nbsp;{{ $iniciativa['porcentaje'] }} %</td>
+                                                            <td style="text-align: right;text-align:-webkit-right;width: 10% !important;">{!! $iniciativa['acciones'] !!}</td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+                                        </div>
+                                        @endhandheld
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                             @endforeach
@@ -142,8 +247,15 @@ Okrs Organización
         </div>
     </div>
 </div>
+
 @endforeach
 @handheld
+<div class="row">
+    <div class="col-md-2">
+        hola
+    </div>
+</div>
+@elsehandheld
 <div class="row">
     <div class="col-md-2">
         hello
@@ -166,53 +278,6 @@ Okrs Organización
         $("#menuOkrsOrganizacion").addClass("current-page");
         $('.js-example-basic-single').select2();
         $(".pagination").addClass("table-responsive mb-2");
-
-        $('table.display').DataTable({
-            columnDefs: [{
-                    responsivePriority: 1,
-                    targets: 0
-                },
-                {
-                    responsivePriority: 2,
-                    targets: -1
-                }
-            ],
-            responsive: true,
-            info: false,
-            ordering: false,
-            paging: false,
-            searching: false,
-            autoWidth: true,
-            language: {
-                processing: "Procesando...",
-                search: "Buscar:",
-                lengthMenu: "Mostrar _MENU_ registros.",
-                info: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                infoEmpty: "Mostrando registros del 0 al 0 de 0 registros",
-                infoFiltered: "(filtrado de un total de _MAX_ registros)",
-                infoPostFix: "",
-                loadingRecords: "Cargando...",
-                zeroRecords: "No se encontraron resultados",
-                emptyTable: "Ningún dato disponible en esta tabla",
-                row: "Registro",
-                export: "Exportar",
-                paginate: {
-                    first: "Primero",
-                    previous: "Anterior",
-                    next: "Siguiente",
-                    last: "Ultimo"
-                },
-                aria: {
-                    sortAscending: ": Activar para ordenar la columna de manera ascendente",
-                    sortDescending: ": Activar para ordenar la columna de manera descendente"
-                },
-                select: {
-                    row: "registro",
-                    selected: "seleccionado"
-                }
-            }
-
-        });
 
     });
 </script>

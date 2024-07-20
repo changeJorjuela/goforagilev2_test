@@ -270,24 +270,40 @@ Okrs Organización
     });
 
     document.addEventListener("DOMContentLoaded", function() {
+        var Iniciativa = "{{ $IniciativaKR }}";
+        var Resultado = "{{ $ResultadoOKR }}";
         var divElement = document.getElementById("datosResultados_{{ $ResultadoOKR }}");
         var divElementKr = document.getElementById("heading{{ $ResultadoOKR }}");
         var divIniciativaM = document.getElementById("datosIniciativas_{{ $IniciativaKR }}");
         var divIniciativaMH = document.getElementById("header{{ $ResultadoOKR }}_{{$IniciativaKR}}");
         var divIniciativa = document.getElementById("IniciativasKR{{$ResultadoOKR}}");
 
-        @handheld
-        if (divIniciativaMH) { 
-            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
-            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
-            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
-            $('html, body').animate({
-                scrollTop: $("#header{{ $ResultadoOKR }}_{{$IniciativaKR}}").offset().top - 90
-            }, 2000);
-            $("#datosIniciativas_{{ $IniciativaKR }}").removeClass("collapsed");
-            document.getElementById("datosIniciativas_{{ $IniciativaKR }}").setAttribute("aria-expanded", true);
-            $("#collapsin{{ $IniciativaKR }}").addClass("show");            
-        } else if (divElement) {
+        if (Iniciativa) {
+            @handheld
+            if (divIniciativaMH) {
+                $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
+                document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
+                $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+                $('html, body').animate({
+                    scrollTop: $("#header{{ $ResultadoOKR }}_{{$IniciativaKR}}").offset().top - 90
+                }, 2000);
+                $("#datosIniciativas_{{ $IniciativaKR }}").removeClass("collapsed");
+                document.getElementById("datosIniciativas_{{ $IniciativaKR }}").setAttribute("aria-expanded", true);
+                $("#collapsin{{ $IniciativaKR }}").addClass("show");
+            }
+            @elsehandheld
+            if (divIniciativa) {
+                $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
+                document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
+                $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+                $('html, body, #heading{{ $ResultadoOKR }}').animate({
+                    scrollTop: $("#fila_{{ $IniciativaKR }}").offset().top - 200
+                }, 2000);
+            }
+            @endhandheld
+        }
+        if (Resultado) {
+        if (divElement) {
             // bootstrap.ScrollSpy.getInstance(divElementKr);
             $('html, body').animate({
                 scrollTop: $("#heading{{ $ResultadoOKR }}").offset().top - 90
@@ -296,24 +312,7 @@ Okrs Organización
             document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
             $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
         }
-        @elsehandheld
-        if (divIniciativa) {
-            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
-            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
-            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
-            $('html, body, #heading{{ $ResultadoOKR }}').animate({
-                scrollTop: $("#fila_{{ $IniciativaKR }}").offset().top - 200
-            }, 2000);            
-        } else if (divElement) {
-            // bootstrap.ScrollSpy.getInstance(divElementKr);
-            $('html, body').animate({
-                scrollTop: $("#heading{{ $ResultadoOKR }}").offset().top - 90
-            }, 2000);
-            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
-            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
-            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
-        }
-        @endhandheld
+    }
 
         // divElement.scrollIntoView(false);
         // divIniciativa.scrollIntoView(false);

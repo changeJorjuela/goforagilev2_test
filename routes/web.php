@@ -52,8 +52,13 @@ Route::group(['middleware' => 'revalidate'], function () {
         // Administración
         Route::get('areas', [AdministradorController::class, 'Areas'])->name('areas');
         Route::get('cargueMasivo', [AdministradorController::class, 'CargueMasivo'])->name('cargueMasivo');
+
         // OKRS
         Route::get('okrsOrganizacion', [OkrsController::class, 'OkrsOrganizacion'])->name('okrsOrganizacion');
+        Route::post('guardarAvanceResultado', [ExtrasController::class, 'GuardarAvanceResultado'])->name('guardarAvanceResultado');
+        Route::post('guardarAvanceIniciativa', [ExtrasController::class, 'GuardarAvanceIniciativa'])->name('guardarAvanceIniciativa');
+
+        //Extras
         Route::get('profileEmpleado', [ExtrasController::class, 'ProfileEmpleado'])->name('profileEmpleado');
         
         Route::get('logout', function () {
@@ -68,7 +73,32 @@ Route::group(['middleware' => 'revalidate'], function () {
     Route::group(['prefix' => 'lider', 'namespace' => 'Lider', 'middleware' => 'lider'], function () {
         Cache::flush();
         Artisan::call('cache:clear');
+
+        // OKRS
+        Route::post('guardarAvanceResultado', [ExtrasController::class, 'GuardarAvanceResultado'])->name('guardarAvanceResultado');
+        Route::post('guardarAvanceIniciativa', [ExtrasController::class, 'GuardarAvanceIniciativa'])->name('guardarAvanceIniciativa');
+
+        //Extras
+        Route::get('profileEmpleado', [ExtrasController::class, 'ProfileEmpleado'])->name('profileEmpleado');
+        Route::get('logout', function () {
+            Auth::logout();
+            Session::flush();
+            Artisan::call('cache:clear');
+            Cache::flush();
+            return Redirect::to('/')->with('mensaje_login', 'Salida Segura');
+        });
+    });
+
+    Route::group(['prefix' => 'colaborador', 'namespace' => 'Colaborador', 'middleware' => 'colaborador'], function () {
+        Cache::flush();
+        Artisan::call('cache:clear');
+
+        // OKRS
+        Route::post('guardarAvanceResultado', [ExtrasController::class, 'GuardarAvanceResultado'])->name('guardarAvanceResultado');
+        Route::post('guardarAvanceIniciativa', [ExtrasController::class, 'GuardarAvanceIniciativa'])->name('guardarAvanceIniciativa');
         
+        //Extras
+        Route::get('profileEmpleado', [ExtrasController::class, 'ProfileEmpleado'])->name('profileEmpleado');
         Route::get('logout', function () {
             Auth::logout();
             Session::flush();
@@ -81,5 +111,7 @@ Route::group(['middleware' => 'revalidate'], function () {
     // ADMINISTRACIÓN
     Route::post('crearArea', [AdminController::class, 'CrearArea'])->name('crearArea');
     Route::post('actualizarArea', [AdminController::class, 'ActualizarArea'])->name('actualizarArea');
-    
+
+    // OKRS
+    // Route::post('guardarAvanceResultado', [ExtrasController::class, 'GuardarAvanceResultado'])->name('guardarAvanceResultado');
 });

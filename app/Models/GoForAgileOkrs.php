@@ -115,6 +115,94 @@ class GoForAgileOkrs extends Model
         return $ComentariosKR;
     }
 
+    public static function GuardarAvanceKr($idKr, $avance, $idOkr, $idEmpresa, $idUser){
+        $hoy = date("Y-m-d H:i:s");
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $resultado = DB::Select("SELECT * FROM Okrs_Resultados WHERE id = $idKr");
+        foreach($resultado as $kr){
+            $descripcionKr = $kr->descripcion;
+            $avanceKr = $kr->avance;
+        }
+
+        $Okrs = DB::Select("SELECT * FROM Okrs WHERE id = $idOkr");
+        foreach($Okrs as $okr){
+            $tipoOkr = $okr->tipo;
+        }
+
+        $descripcion = "Actualización de avance de KR $descripcionKr del $avanceKr al $avance";
+        DB::Insert("INSERT INTO Auditoria_Okrs (id_empresa,id_empleado,accion,descripcion,tipo_okr,id_okr,id_kr,id_iniciativa,created_at)
+        VALUES ($idEmpresa, $idUser, 'ACTUALIZAR', '$descripcion', $tipoOkr, $idOkr, $idKr, 0, '$hoy')");
+
+        $GuardarAvanceKr = DB::Update("UPDATE Okrs_Resultados SET avance = '$avance' WHERE id = $idKr");
+
+        return $GuardarAvanceKr;
+        
+    }  
+
+    //INICIATIVAS
+    public static function IniciativasKR($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Iniciativas WHERE id_resultado = $id");
+        return $ResultadosOKR;
+    }
+
+    public static function PlanesIniciativa($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $PlanesIniciativa = DB::Select("SELECT * FROM Okrs_Actividades WHERE id_iniciativa = $id ");
+        return $PlanesIniciativa;
+    }
+
+    public static function PlanesIniciativaRealizado($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $PlanesIniciativaRealizado = DB::Select("SELECT * FROM Okrs_Actividades WHERE id_iniciativa = $id AND checked = 'true'");
+        return $PlanesIniciativaRealizado;
+    }
+
+    public static function DocumentosIniciativa($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $DocumentosIniciativa = DB::Select("SELECT * FROM Okrs_Documentos WHERE id_iniciativa = $id");
+        return $DocumentosIniciativa;
+    }
+
+    public static function ComentariosIniciativa($id)
+    {
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $ComentariosIniciativa = DB::Select("SELECT * FROM Okrs_Comentarios_Iniciativas WHERE id_iniciativa = $id");
+        return $ComentariosIniciativa;
+    }
+
+    public static function ActualizaTendenciaIniciativa($tendencia,$id){
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        DB::Update("UPDATE Okrs_Iniciativas SET tendencia = $tendencia, updated_at = NOW() WHERE id = $id");
+    }
+
+    public static function GuardarAvanceIniciativa($id, $idKr, $avance, $idOkr, $idEmpresa, $idUser){
+        $hoy = date("Y-m-d H:i:s");
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $iniciativas = DB::Select("SELECT * FROM Okrs_Iniciativas WHERE id = $id");
+        foreach($iniciativas as $iniciativa){
+            $descripcionIni = $iniciativa->descripcion;
+            $avanceIni = $iniciativa->avance;
+        }
+
+        $Okrs = DB::Select("SELECT * FROM Okrs WHERE id = $idOkr");
+        foreach($Okrs as $okr){
+            $tipoOkr = $okr->tipo;
+        }
+
+        $descripcion = "Actualización de avance de iniciativa $descripcionIni del $avanceIni al $avance";
+        DB::Insert("INSERT INTO Auditoria_Okrs (id_empresa,id_empleado,accion,descripcion,tipo_okr,id_okr,id_kr,id_iniciativa,created_at)
+        VALUES ($idEmpresa, $idUser, 'ACTUALIZAR', '$descripcion', $tipoOkr, $idOkr, $idKr, $id, '$hoy')");
+
+        $GuardarAvanceIniciativa = DB::Update("UPDATE Okrs_Iniciativas SET avance = '$avance' WHERE id = $id");
+
+        return $GuardarAvanceIniciativa;
+    }
+
 
     //EXTRAS
     public static function EscalaColor($porcentaje, $id_empresa)
@@ -172,47 +260,5 @@ class GoForAgileOkrs extends Model
         $escala['txt_subtitulo'] = $txt_subtitulo;
 
         return $escala;
-    }
-
-
-    //INICIATIVAS
-    public static function IniciativasKR($id)
-    {
-        DB::setDefaultConnection("mysql-goforagile_okrs");
-        $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Iniciativas WHERE id_resultado = $id");
-        return $ResultadosOKR;
-    }
-
-    public static function PlanesIniciativa($id)
-    {
-        DB::setDefaultConnection("mysql-goforagile_okrs");
-        $PlanesIniciativa = DB::Select("SELECT * FROM Okrs_Actividades WHERE id_iniciativa = $id ");
-        return $PlanesIniciativa;
-    }
-
-    public static function PlanesIniciativaRealizado($id)
-    {
-        DB::setDefaultConnection("mysql-goforagile_okrs");
-        $PlanesIniciativaRealizado = DB::Select("SELECT * FROM Okrs_Actividades WHERE id_iniciativa = $id AND checked = 'true'");
-        return $PlanesIniciativaRealizado;
-    }
-
-    public static function DocumentosIniciativa($id)
-    {
-        DB::setDefaultConnection("mysql-goforagile_okrs");
-        $DocumentosIniciativa = DB::Select("SELECT * FROM Okrs_Documentos WHERE id_iniciativa = $id");
-        return $DocumentosIniciativa;
-    }
-
-    public static function ComentariosIniciativa($id)
-    {
-        DB::setDefaultConnection("mysql-goforagile_okrs");
-        $ComentariosIniciativa = DB::Select("SELECT * FROM Okrs_Comentarios_Iniciativas WHERE id_iniciativa = $id");
-        return $ComentariosIniciativa;
-    }
-
-    public static function ActualizaTendenciaIniciativa($tendencia,$id){
-        DB::setDefaultConnection("mysql-goforagile_okrs");
-        DB::Update("UPDATE Okrs_Iniciativas SET tendencia = $tendencia, updated_at = NOW() WHERE id = $id");
     }
 }

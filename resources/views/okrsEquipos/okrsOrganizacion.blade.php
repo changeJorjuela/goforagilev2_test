@@ -80,7 +80,7 @@ Okrs Organización
                                     <div class="row">
                                         <div class="col-md-7">
                                             <h5 class="fill_resultados">
-                                                <a class="collapsed" data-toggle="collapse" href="#collapseKr{{$kr['id']}}" aria-expanded="false" aria-controls="collapseKr{{$kr['id']}}" id="datosResultados">
+                                                <a class="collapsed" data-toggle="collapse" href="#collapseKr{{$kr['id']}}" aria-expanded="false" aria-controls="collapseKr{{$kr['id']}}" id="datosResultados_{{$kr['id']}}" style="color: black !important;">
                                                     {{ $kr['periodo'] }}&nbsp;&nbsp;|&nbsp;&nbsp;{{ $kr['descripcion'] }}
                                                 </a>
                                             </h5>
@@ -153,7 +153,7 @@ Okrs Organización
                                                             <div class="row">
                                                                 <div class="col-md-7">
                                                                     <h5 class="fill_iniciativas">
-                                                                        <a class="collapsed" data-toggle="collapse" href="#collapsin{{$iniciativa['id']}}" aria-expanded="false" aria-controls="collapsin{{$iniciativa['id']}}" id="datosIniciativas">
+                                                                        <a class="collapsed" data-toggle="collapse" href="#collapsin{{$iniciativa['id']}}" aria-expanded="false" aria-controls="collapsin{{$iniciativa['id']}}" id="datosIniciativas_{{$iniciativa['id']}}" style="color: black !important;">
                                                                             {{$iniciativa['descripcion']}}
                                                                         </a>
                                                                     </h5>
@@ -165,7 +165,7 @@ Okrs Organización
                                                                 </div>
                                                                 <div class="col-md-3">
                                                                     <h5 class="fill_iniciativas">
-                                                                    {!! $iniciativa['porcentajeBarra'] !!}&nbsp;&nbsp;{{ $iniciativa['porcentaje'] }} %
+                                                                        {!! $iniciativa['porcentajeBarra'] !!}&nbsp;&nbsp;{{ $iniciativa['porcentaje'] }} %
                                                                     </h5>
                                                                 </div>
                                                             </div>
@@ -184,7 +184,7 @@ Okrs Organización
                                                                                     <td><b>Entrega</b></td>
                                                                                     <td clase="detalleKrIniciativa">{{$iniciativa['entrega']}}</td>
                                                                                 </tr>
-                                                                                <tr>
+                                                                                <tr id="fila_{{$iniciativa['id']}}">
                                                                                     <td><b>Seguimiento</b></td>
                                                                                     <td clase="detalleKrIniciativa">{!!$iniciativa['avance']!!}</td>
                                                                                 </tr>
@@ -207,7 +207,7 @@ Okrs Organización
                                         @elsehandheld
                                         <div class="row">
                                             <div class="col-md-12 col-sm-12">
-                                                <table class="table table-responsive" id="IniciativasKR">
+                                                <table class="table table-responsive" id="IniciativasKR{{$kr['id']}}">
                                                     <thead>
                                                         <th style="width: 50% !important;"><b>Iniciativa</b></th>
                                                         <th style="width: 10% !important;"><b>Responsables</b></th>
@@ -219,7 +219,7 @@ Okrs Organización
                                                     </thead>
                                                     <tbody>
                                                         @foreach($kr['iniciativas'] as $iniciativa)
-                                                        <tr>
+                                                        <tr id="fila_{{$iniciativa['id']}}">
                                                             <td style="width: 50% !important;">{{$iniciativa['descripcion']}}</td>
                                                             <td style="width: 10% !important;">{!!$iniciativa['responsables']!!}</td>
                                                             <td style="width: 10% !important;">{{$iniciativa['entrega']}}</td>
@@ -249,25 +249,13 @@ Okrs Organización
 </div>
 
 @endforeach
-@handheld
-<div class="row">
-    <div class="col-md-2">
-        hola
-    </div>
-</div>
-@elsehandheld
-<div class="row">
-    <div class="col-md-2">
-        hello
-    </div>
-</div>
-@endhandheld
+
 <div class="row gutters">
     <div class="col-md-12 col-sm-12">
         {{$paginacion->links()}}
     </div>
 </div>
-
+@include("modals.modalProfile")
 @endsection
 @section('scripts')
 <script src="{{asset("js/okrs.min.js")}}"></script>
@@ -280,6 +268,58 @@ Okrs Organización
         $(".pagination").addClass("table-responsive mb-2");
 
     });
-</script>
 
+    document.addEventListener("DOMContentLoaded", function() {
+        var divElement = document.getElementById("datosResultados_{{ $ResultadoOKR }}");
+        var divElementKr = document.getElementById("heading{{ $ResultadoOKR }}");
+        var divIniciativaM = document.getElementById("datosIniciativas_{{ $IniciativaKR }}");
+        var divIniciativaMH = document.getElementById("header{{ $ResultadoOKR }}_{{$IniciativaKR}}");
+        var divIniciativa = document.getElementById("IniciativasKR{{$ResultadoOKR}}");
+
+        @handheld
+        if (divIniciativaMH) { 
+            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
+            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
+            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+            $('html, body').animate({
+                scrollTop: $("#header{{ $ResultadoOKR }}_{{$IniciativaKR}}").offset().top - 90
+            }, 2000);
+            $("#datosIniciativas_{{ $IniciativaKR }}").removeClass("collapsed");
+            document.getElementById("datosIniciativas_{{ $IniciativaKR }}").setAttribute("aria-expanded", true);
+            $("#collapsin{{ $IniciativaKR }}").addClass("show");            
+        } else if (divElement) {
+            // bootstrap.ScrollSpy.getInstance(divElementKr);
+            $('html, body').animate({
+                scrollTop: $("#heading{{ $ResultadoOKR }}").offset().top - 90
+            }, 2000);
+            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
+            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
+            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+        }
+        @elsehandheld
+        if (divIniciativa) {
+            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
+            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
+            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+            $('html, body, #heading{{ $ResultadoOKR }}').animate({
+                scrollTop: $("#fila_{{ $IniciativaKR }}").offset().top - 200
+            }, 2000);            
+        } else if (divElement) {
+            // bootstrap.ScrollSpy.getInstance(divElementKr);
+            $('html, body').animate({
+                scrollTop: $("#heading{{ $ResultadoOKR }}").offset().top - 90
+            }, 2000);
+            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
+            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
+            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+        }
+        @endhandheld
+
+        // divElement.scrollIntoView(false);
+        // divIniciativa.scrollIntoView(false);
+
+    });
+    window.location.hash = "";
+    window.location.hash = "";
+</script>
 @endsection

@@ -52,7 +52,7 @@ class OkrsController extends Controller
             $porcentaje_barra = $porcentaje_final;
         }
         $porcentajeFinalBarra = round($porcentaje_final, 2);
-        $EscalaColor = GoForAgileOkrs::EscalaColor($porcentaje_final, Session::get('id_empresa'));
+        $EscalaColor = GoForAgileAdmin::EscalaColor($porcentaje_final, Session::get('id_empresa'));
         $backgroundColor = "background-color:" . $EscalaColor['color_bg'] . " !important";
 
         foreach ($OkrsOrganizacion as $row) {
@@ -95,7 +95,7 @@ class OkrsController extends Controller
                 $porcentaje_avance = 0;
             }
             $array_okrs[$contOkrs]['porcentaje'] = $porcentaje_avance;
-            $EscalaColor = GoForAgileOkrs::EscalaColor($porcentaje_avance, Session::get('id_empresa'));
+            $EscalaColor = GoForAgileAdmin::EscalaColor($porcentaje_avance, Session::get('id_empresa'));
             $array_okrs[$contOkrs]['color_bg'] = $EscalaColor["color_bg"];
             GoForAgileOkrs::OrderResultados($row->id_okrs);
 
@@ -115,10 +115,20 @@ class OkrsController extends Controller
             'pageName' => 'pagina'
         ]);
 
+        $anioOkrFiltro = GoForAgileAdmin::AnioOkr();
+        $vicepresidenciasFiltro = GoForAgileAdmin::SelectVicepresidencia(Session::get('id_empresa'));
+        $objEstrategicosFiltro = GoForAgileOkrs::SelectObjEstrategico(Session::get('id_empresa'),Session::get('anio_fill'));
+        $areasFiltro = GoForAgileAdmin::SelectArea(Session::get('id_empresa'));
+        $responsablesFiltro = GoForAgileOkrs::SelectResponsables(Session::get('id_user'),Session::get('id_empresa'));
+        $tipoOkrFiltro = GoForAgileOkrs::SelectTipoOkr();
+        $okrsFiltro = GoForAgileOkrs::SelectOkrs(Session::get('id_empresa'),Session::get('anio_fill'));
+        // Session::put('Q1', 'on');
+        
         return view('okrsEquipos.okrsOrganizacion', [
             'PorcentajeFinal' => $porcentaje_final, 'PorcentajeBarra' => $porcentaje_barra, 'PorcentajeFinalBarra' => $porcentajeFinalBarra, 'ColorPorcentaje' => $backgroundColor,
             'Okrs' => $array_okrs, 'paginacion' => $paginacion, 'Nombre' => $nombre, 'Foto' => $foto, 'Cargo' => $cargo, 'Area' => $area, 'VP' => $vp, 'ResultadoOKR' => $resultadoOkr,
-            'IniciativaKR' => $iniciativaKr
+            'IniciativaKR' => $iniciativaKr, 'AnioOkrFiltro' => $anioOkrFiltro, 'VicepresidenciasFiltro' => $vicepresidenciasFiltro, 'ObjEstrategicoFiltro' => $objEstrategicosFiltro,
+            'AreasFiltro' => $areasFiltro, 'ResponsablesFiltro' => $responsablesFiltro, 'TipoOkrFiltro' => $tipoOkrFiltro, 'OkrsFiltro' => $okrsFiltro
         ]);
     }
 
@@ -169,28 +179,28 @@ class OkrsController extends Controller
 
             $color_text = $color_text_inic = "black";
 
-            $escala_kr = GoForAgileOkrs::EscalaColor(round($porcentaje_kr), Session::get('id_empresa'));
+            $escala_kr = GoForAgileAdmin::EscalaColor(round($porcentaje_kr), Session::get('id_empresa'));
             $back_color_kr = "background-color:" . $escala_kr['color_bg'] . " !important";
             $txt_rango_meta = $escala_kr['txt_subtitulo'];
 
             $txt_meta = $resultado->meta;
             if ($resultado->medicion == 1) {
-                $txt_meta = $resultado->meta;
+                $txt_meta = " ".$resultado->meta;
             }
             if ($resultado->medicion == 2) {
-                $txt_meta = $resultado->meta . " Hrs";
+                $txt_meta = " ".$resultado->meta . " Hrs";
             }
             if ($resultado->medicion == 3) {
-                $txt_meta = "$ " . $resultado->meta;
+                $txt_meta = " $" . $resultado->meta;
             }
             if ($resultado->medicion == 4) {
-                $txt_meta = $resultado->meta . "%";
+                $txt_meta = " ".$resultado->meta . " %";
             }
             if ($resultado->medicion == 5) {
-                $txt_meta = $resultado->meta . " Docs";
+                $txt_meta = " ".$resultado->meta . " Docs";
             }
             if ($resultado->medicion == 6) {
-                $txt_meta = $resultado->meta . " Hitos";
+                $txt_meta = " ".$resultado->meta . " Hitos";
             }
 
             $porcentajeBar = '<div class="progress sm no-margin" title="' . $txt_rango_meta . '">
@@ -252,7 +262,7 @@ class OkrsController extends Controller
                 $faltantes2 = 0;
             }
 
-            $escala_faltante = GoForAgileOkrs::EscalaColor(round($porcentaje_faltante), Session::get('id_empresa'));
+            $escala_faltante = GoForAgileAdmin::EscalaColor(round($porcentaje_faltante), Session::get('id_empresa'));
             $back_color_faltante = "background-color:" . $escala_faltante['color_bg'] . " !important";
 
             $porcentajeDias = '<div class="progress sm no-margin">
@@ -372,7 +382,7 @@ class OkrsController extends Controller
                 $porcentaje_barra = $porciento;
             }
 
-            $escala_ini = GoForAgileOkrs::EscalaColor($porciento, Session::get('id_empresa'));
+            $escala_ini = GoForAgileAdmin::EscalaColor($porciento, Session::get('id_empresa'));
             $back_color_ini = "background-color:" . $escala_ini['color_bg'] . " !important";
             $txt_rango_meta_inic = $escala_ini['txt_subtitulo'];
 
@@ -398,9 +408,9 @@ class OkrsController extends Controller
 
             if ($validar_edit == false) {
                 if ($iniciativa->avance) {
-                    $select = $iniciativa->avance . "%";
+                    $select = " ".$iniciativa->avance . "%";
                 } else {
-                    $select = "0%";
+                    $select = " 0%";
                 }
             }
 

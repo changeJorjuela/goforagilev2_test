@@ -49,6 +49,32 @@ class GoForAgileOkrs extends Model
         return $Okrs;
     }
 
+    public static function SelectOkrs($id, $anio){
+        $SelectOkrs = array();
+        $SelectOkrs[''] = 'Seleccione Okr:';
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $selectOkrs = DB::Select("SELECT * FROM Okrs WHERE id_empresa = $id AND anio = $anio AND estado = 1 ORDER BY objetivo_okr");
+        foreach($selectOkrs as $okr){
+            $SelectOkrs[$okr->id] = $okr->objetivo_okr;
+        }
+
+        return $SelectOkrs;
+    }
+
+
+    //OBJETIVOS ESTRATEGICOS
+    public static function SelectObjEstrategico($id, $anio){
+        $objEstrategicos = array();
+        $objEstrategicos[''] = 'Seleccione Objetivo Estratégico:';
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $selectOES = DB::Select("SELECT * FROM Objetivos_Estrategicos WHERE id_empresa = $id AND anio = $anio AND estado = 1  ORDER BY objetivo");
+        foreach($selectOES as $oe){
+            $objEstrategicos[$oe->id] = $oe->objetivo;
+        }
+
+        return $objEstrategicos;
+    }
+
 
     //RESULTADOS
     public static function ResultadosOKR($id_okr)
@@ -205,60 +231,42 @@ class GoForAgileOkrs extends Model
 
 
     //EXTRAS
-    public static function EscalaColor($porcentaje, $id_empresa)
-    {
-        DB::setDefaultConnection("mysql-goforagile_admin");
+    public static function SelectResponsables($idUser, $idEmpresa){
+        DB::setDefaultConnection("mysql-goforagile_okrs");
+        $equiposViews = DB::Select("SELECT * FROM Equipos_Views WHERE id_empresa = $idEmpresa AND id_empleado = $idUser");
+        $OR_FILL = "";
+        if($equiposViews){
+            foreach($equiposViews as $EV){
+                if ($OR_FILL == "") {
+                    $OR_FILL = " OE.id_okrs = $EV->id_okrs";
+                } else {
+                    $OR_FILL .= " OR OE.id_okrs = $EV->id_okrs";
+                }
+            }
+        }
+        $filtroResponsables = array();
+        $filtroResponsables[''] = 'Seleccione Responsable:';
+        $queryColFiltro = DB::Select("SELECT OE.id_empleado, E.nombre
+        FROM Okrs_Equipos OE
+	    INNER JOIN goforagile_admin.Empleados E ON E.id = OE.id_empleado
+        WHERE OE.id_empresa = $idEmpresa AND (" . $OR_FILL . ") GROUP BY OE.id_empleado ORDER BY E.nombre");
 
-        $Escala = DB::Select("SELECT * FROM Escala_Medicion WHERE id_empresa = $id_empresa");
-        foreach ($Escala as $value) {
-            $Porcentaje1 = $value->porcentaje_uno;
-            $Porcentaje2 = $value->porcentaje_dos;
-            $Porcentaje3 = $value->porcentaje_tres;
-            $Porcentaje4 = $value->porcentaje_cuatro;
-            $Porcentaje5 = $value->porcentaje_cinco;
-            $Porcentaje6 = $value->porcentaje_seis;
-            $Porcentaje7 = $value->porcentaje_siete;
-            $Subtitulo1 = $value->subtitulo_uno;
-            $Subtitulo2 = $value->subtitulo_dos;
-            $Subtitulo3 = $value->subtitulo_tres;
-            $Subtitulo4 = $value->subtitulo_cuatro;
-            $Subtitulo5 = $value->subtitulo_cinco;
-        }
-
-        $color_bg = "#FF0000";
-        $color_text = "#000000";
-        $escala = array();
-
-        if ($porcentaje >= $Porcentaje1 && $porcentaje < $Porcentaje3) {
-            $color_bg = "#FF0000";
-            $txt_subtitulo = $Subtitulo1;
-            $color_text = "#F7F7F7";
-        }
-        if ($porcentaje >= $Porcentaje3 && $porcentaje < $Porcentaje5) {
-            $color_bg = "#FFF200";
-            $txt_subtitulo = $Subtitulo2;
-        }
-        if ($porcentaje >= $Porcentaje5 && $porcentaje < $Porcentaje7) {
-            $color_bg = "#95FA03";
-            $txt_subtitulo = $Subtitulo3;
-        }
-        if ($porcentaje >= $Porcentaje7 && $porcentaje <= 100) {
-            $color_bg = "#14F209";
-            $txt_subtitulo = $Subtitulo4;
-        }
-        // if( $porcentaje == 100 ){
-        // 	$color_bg = "#0DF205";
-        // 	$txt_subtitulo = $dataEscala['subtitulo_cinco'];
-        // }
-        if ($porcentaje > 100) {
-            $color_bg = "#00D30A";
-            $txt_subtitulo = $Subtitulo5;
+        foreach($queryColFiltro as $conFiltro){
+            $empleado = GoForAgileAdmin::EmpleadoId($conFiltro->id_empleado);
+            foreach($empleado as $em){
+                $filtroResponsables[$em->id] = $em->nombre;
+            }
         }
 
-        $escala['color_bg'] = $color_bg;
-        $escala['color_text'] = $color_text;
-        $escala['txt_subtitulo'] = $txt_subtitulo;
+        return $filtroResponsables;
 
-        return $escala;
+    }
+
+    public static function SelectTipoOkr(){
+        $TipoOkr = array();
+        $TipoOkr[''] = 'Seleccione Tipo Okr:';
+        $TipoOkr[2]  = 'Equipo';
+        $TipoOkr[1]  = 'Organizacional';
+        return $TipoOkr;
     }
 }

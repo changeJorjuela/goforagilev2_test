@@ -34,9 +34,11 @@
     <link rel="stylesheet" href="{{asset("DataTables/responsive.bootstrap5.css")}}">
     <link rel="stylesheet" href="{{asset("DataTables/buttons.bootstrap5.css")}}">
     <!-- <link rel="stylesheet" href="{{asset("DataTables/datatables-buttons/css/buttons.bootstrap4.min.css")}}"> -->
-    <link rel="stylesheet" href="{{asset("css/select2.min.css")}}">
-    <link rel="stylesheet" href="{{asset("css/toastr.min.css")}}">
+    <link rel="stylesheet" href="{{asset("css/toastr.min.css")}}">   
 
+    <!-- Select -->
+    <link rel="stylesheet" href="{{asset("css/select2.min.css")}}">
+    <link rel="stylesheet" href="{{asset("css/select2-bootstrap-5-theme.min.css")}}">
     @yield('styles')
 </head>
 

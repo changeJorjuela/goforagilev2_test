@@ -64,6 +64,18 @@ class GoForAgileAdmin extends Model
         return $crearArea;
     }
 
+    public static function SelectArea($id){
+        $listArea = array();
+        $listArea[''] = 'Seleccione Área:';
+        DB::setDefaultConnection("mysql-goforagile_admin");
+        $selectArea = DB::Select("SELECT * FROM Areas WHERE id_empresa = $id AND estado = 1 ORDER BY nombre");
+        foreach($selectArea as $area){
+            $listArea[$area->id] = $area->nombre;
+        }
+
+        return $listArea;
+    }
+
     // EMPLEADOS
     public static function BuscarUserLogin($user)
     {
@@ -144,6 +156,19 @@ class GoForAgileAdmin extends Model
         return $rol;
     }
 
+    // VICEPRESIDENCIAS
+    public static function SelectVicepresidencia($id){
+        $vicepresidencias = array();
+        $vicepresidencias[''] = 'Seleccione Vicepresidencia:';
+        DB::setDefaultConnection("mysql-goforagile_admin");
+        $selectVP = DB::Select("SELECT * FROM Vicepresidencia WHERE id_empresa = $id AND estado = 1 ORDER BY nombre");
+        foreach($selectVP as $vp){
+            $vicepresidencias[$vp->id] = $vp->nombre;
+        }
+
+        return $vicepresidencias;
+    }
+
 
     // EXTRAS
     public static function FechaAmigable($fecha)
@@ -172,5 +197,79 @@ class GoForAgileAdmin extends Model
         }
 
         return $txt_mes . " " . $partes[2] . " de " . $partes[0];
+    }
+
+    public static function AnioOkr(){
+        $Array_Anio = array();
+        $Array_Anio[''] = 'Seleccione Año:';
+        $Array_Anio[2023]  = '2023';
+        $Array_Anio[2024]  = '2024';
+        $Array_Anio[2025]  = '2025';
+        return $Array_Anio;
+    }
+
+    public static function Estado(){
+        $Estado = array();
+        $Estado[''] = 'Seleccione Estado:';
+        $Estado[1]  = 'Activo';
+        $Estado[2]  = 'Inactivo';
+        return $Estado;
+    }
+
+    public static function EscalaColor($porcentaje, $id_empresa)
+    {
+        DB::setDefaultConnection("mysql-goforagile_admin");
+
+        $Escala = DB::Select("SELECT * FROM Escala_Medicion WHERE id_empresa = $id_empresa");
+        foreach ($Escala as $value) {
+            $Porcentaje1 = $value->porcentaje_uno;
+            $Porcentaje2 = $value->porcentaje_dos;
+            $Porcentaje3 = $value->porcentaje_tres;
+            $Porcentaje4 = $value->porcentaje_cuatro;
+            $Porcentaje5 = $value->porcentaje_cinco;
+            $Porcentaje6 = $value->porcentaje_seis;
+            $Porcentaje7 = $value->porcentaje_siete;
+            $Subtitulo1 = $value->subtitulo_uno;
+            $Subtitulo2 = $value->subtitulo_dos;
+            $Subtitulo3 = $value->subtitulo_tres;
+            $Subtitulo4 = $value->subtitulo_cuatro;
+            $Subtitulo5 = $value->subtitulo_cinco;
+        }
+
+        $color_bg = "#FF0000";
+        $color_text = "#000000";
+        $escala = array();
+
+        if ($porcentaje >= $Porcentaje1 && $porcentaje < $Porcentaje3) {
+            $color_bg = "#FF0000";
+            $txt_subtitulo = $Subtitulo1;
+            $color_text = "#F7F7F7";
+        }
+        if ($porcentaje >= $Porcentaje3 && $porcentaje < $Porcentaje5) {
+            $color_bg = "#FFF200";
+            $txt_subtitulo = $Subtitulo2;
+        }
+        if ($porcentaje >= $Porcentaje5 && $porcentaje < $Porcentaje7) {
+            $color_bg = "#95FA03";
+            $txt_subtitulo = $Subtitulo3;
+        }
+        if ($porcentaje >= $Porcentaje7 && $porcentaje <= 100) {
+            $color_bg = "#14F209";
+            $txt_subtitulo = $Subtitulo4;
+        }
+        // if( $porcentaje == 100 ){
+        // 	$color_bg = "#0DF205";
+        // 	$txt_subtitulo = $dataEscala['subtitulo_cinco'];
+        // }
+        if ($porcentaje > 100) {
+            $color_bg = "#00D30A";
+            $txt_subtitulo = $Subtitulo5;
+        }
+
+        $escala['color_bg'] = $color_bg;
+        $escala['color_text'] = $color_text;
+        $escala['txt_subtitulo'] = $txt_subtitulo;
+
+        return $escala;
     }
 }

@@ -57,6 +57,7 @@ Route::group(['middleware' => 'revalidate'], function () {
         Route::get('okrsOrganizacion', [OkrsController::class, 'OkrsOrganizacion'])->name('okrsOrganizacion');
         Route::post('guardarAvanceResultado', [ExtrasController::class, 'GuardarAvanceResultado'])->name('guardarAvanceResultado');
         Route::post('guardarAvanceIniciativa', [ExtrasController::class, 'GuardarAvanceIniciativa'])->name('guardarAvanceIniciativa');
+        // Route::post('filtroOkrsOrg', [OkrsController::class, 'OkrsOrganizacion'])->name('filtroOkrsOrg');
 
         //Extras
         Route::get('profileEmpleado', [ExtrasController::class, 'ProfileEmpleado'])->name('profileEmpleado');
@@ -114,4 +115,5 @@ Route::group(['middleware' => 'revalidate'], function () {
 
     // OKRS
     // Route::post('guardarAvanceResultado', [ExtrasController::class, 'GuardarAvanceResultado'])->name('guardarAvanceResultado');
+    // Route::post('filtroOkrsOrg', [OkrsController::class, 'OkrsOrganizacion'])->name('filtroOkrsOrg');
 });

@@ -13,16 +13,40 @@ class OkrsController extends Controller
 {
     public function OkrsOrganizacion(Request $request)
     {
+        // dd($request);
+        $anio_curso = Session::get('anio_curso');
+        // dd(Session::all());
         $congelar_okrs = true;
         if (Session::get('anio_fill') == Session::get('anio_curso')) {
+            // dd('1');
             $congelar_okrs = false;
         }
+        // Session::put('anio_fill',$anio_curso);
         $resultadoOkr = $request->resultado_okr_;
         $iniciativaKr = $request->iniciativa;
         // dd($resultadoOkr);
-        $porPagina = 10;
+        $porPagina = 12;
         $paginaActual = LengthAwarePaginator::resolveCurrentPage('pagina');
         // dd(LengthAwarePaginator::resolveCurrentPage('pagina'));
+
+        $filtrosPagina = OkrsController::FiltrosPagina($request, $anio_curso);
+        // dd($values);
+        $filtroVp = $filtrosPagina["vicepresidencia_fill"];
+        $filtroArea = $filtrosPagina["areas_fill"];
+        $filtroResponsable = $filtrosPagina["responsable_fill"];
+        $filtroObjEst = $filtrosPagina["objestrategico_fill"];
+        $filtroOkr = $filtrosPagina["okr_fill"];
+        $filtroTipoOkr = $filtrosPagina["tipo_okr_fill"];
+        $filtroAnio = $filtrosPagina["anio_fill"];
+        $filtroQ1 = $filtrosPagina["Q1"];
+        $filtroQ2 = $filtrosPagina["Q2"];
+        $filtroQ3 = $filtrosPagina["Q3"];
+        $filtroQ4 = $filtrosPagina["Q4"];
+        $filtroAnual = $filtrosPagina["Anual"];
+        $filtro_periodo = $filtrosPagina["periodo_fill"];
+
+        Session::put('periodo_fill', $filtro_periodo != "" ? $filtro_periodo : "");
+        // dd(Session::all());
         $offset = ($paginaActual - 1) * $porPagina;
         $filtro = $nombre = $foto = $cargo = $area = $vp = "";
         $avance_general = $count_avance_general_equipo = 0;
@@ -117,23 +141,28 @@ class OkrsController extends Controller
 
         $anioOkrFiltro = GoForAgileAdmin::AnioOkr();
         $vicepresidenciasFiltro = GoForAgileAdmin::SelectVicepresidencia(Session::get('id_empresa'));
-        $objEstrategicosFiltro = GoForAgileOkrs::SelectObjEstrategico(Session::get('id_empresa'),Session::get('anio_fill'));
+        $objEstrategicosFiltro = GoForAgileOkrs::SelectObjEstrategico(Session::get('id_empresa'), Session::get('anio_fill'));
         $areasFiltro = GoForAgileAdmin::SelectArea(Session::get('id_empresa'));
-        $responsablesFiltro = GoForAgileOkrs::SelectResponsables(Session::get('id_user'),Session::get('id_empresa'));
+        $responsablesFiltro = GoForAgileOkrs::SelectResponsables(Session::get('id_user'), Session::get('id_empresa'));
         $tipoOkrFiltro = GoForAgileOkrs::SelectTipoOkr();
-        $okrsFiltro = GoForAgileOkrs::SelectOkrs(Session::get('id_empresa'),Session::get('anio_fill'));
+        $okrsFiltro = GoForAgileOkrs::SelectOkrs(Session::get('id_empresa'), Session::get('anio_fill'));
         // Session::put('Q1', 'on');
-        
+
         return view('okrsEquipos.okrsOrganizacion', [
             'PorcentajeFinal' => $porcentaje_final, 'PorcentajeBarra' => $porcentaje_barra, 'PorcentajeFinalBarra' => $porcentajeFinalBarra, 'ColorPorcentaje' => $backgroundColor,
             'Okrs' => $array_okrs, 'paginacion' => $paginacion, 'Nombre' => $nombre, 'Foto' => $foto, 'Cargo' => $cargo, 'Area' => $area, 'VP' => $vp, 'ResultadoOKR' => $resultadoOkr,
             'IniciativaKR' => $iniciativaKr, 'AnioOkrFiltro' => $anioOkrFiltro, 'VicepresidenciasFiltro' => $vicepresidenciasFiltro, 'ObjEstrategicoFiltro' => $objEstrategicosFiltro,
-            'AreasFiltro' => $areasFiltro, 'ResponsablesFiltro' => $responsablesFiltro, 'TipoOkrFiltro' => $tipoOkrFiltro, 'OkrsFiltro' => $okrsFiltro
+            'AreasFiltro' => $areasFiltro, 'ResponsablesFiltro' => $responsablesFiltro, 'TipoOkrFiltro' => $tipoOkrFiltro, 'OkrsFiltro' => $okrsFiltro, 'filtroVp' => $filtroVp,
+            'filtroVp' => $filtroVp, 'filtroArea' => $filtroArea, 'filtroResponsable' => $filtroResponsable, 'filtroObjEst' => $filtroObjEst, 'filtroOkr' => $filtroOkr, 'filtroTipoOkr' => $filtroTipoOkr,
+            'filtroAnio' => $filtroAnio, 'filtroQ1' => $filtroQ1, 'filtroQ2' => $filtroQ2, 'filtroQ3' => $filtroQ3, 'filtroQ4' => $filtroQ4, 'filtroAnual' => $filtroAnual
         ]);
     }
 
     public static function Resultados($idOkr, $filtro, $congelar_okrs, $okrTipoRole, $okrAnio, $pagina, $numeroP)
     {
+        if (Session::get('periodo_fill') != "") {
+            $filtro .= " AND periodo IN (" . Session::get('periodo_fill') . ") ";
+        }
         $resultadosVisual = GoForAgileOkrs::ResultadosOKRFiltro($idOkr, $filtro);
 
         $array_resultados = array();
@@ -185,22 +214,22 @@ class OkrsController extends Controller
 
             $txt_meta = $resultado->meta;
             if ($resultado->medicion == 1) {
-                $txt_meta = " ".$resultado->meta;
+                $txt_meta = " " . $resultado->meta;
             }
             if ($resultado->medicion == 2) {
-                $txt_meta = " ".$resultado->meta . " Hrs";
+                $txt_meta = " " . $resultado->meta . " Hrs";
             }
             if ($resultado->medicion == 3) {
                 $txt_meta = " $" . $resultado->meta;
             }
             if ($resultado->medicion == 4) {
-                $txt_meta = " ".$resultado->meta . " %";
+                $txt_meta = " " . $resultado->meta . " %";
             }
             if ($resultado->medicion == 5) {
-                $txt_meta = " ".$resultado->meta . " Docs";
+                $txt_meta = " " . $resultado->meta . " Docs";
             }
             if ($resultado->medicion == 6) {
-                $txt_meta = " ".$resultado->meta . " Hitos";
+                $txt_meta = " " . $resultado->meta . " Hitos";
             }
 
             $porcentajeBar = '<div class="progress sm no-margin" title="' . $txt_rango_meta . '">
@@ -220,15 +249,12 @@ class OkrsController extends Controller
             $array_resultados[$contKR]["listaResponsables"] = $listaResponsables;
             $array_resultados[$contKR]['fecha_inicia'] = GoForAgileAdmin::FechaAmigable($resultado->fecha_inicia);
             $array_resultados[$contKR]['fecha_entrega'] = GoForAgileAdmin::FechaAmigable($resultado->fecha_entrega);
-            
+
             $editar = $txt_meta;
             if ($congelar_okrs == false) {
                 if ($okrTipoRole == 1 || $okrTipoRole == 2) {
-                    switch ($pagina) {
-                        case 1:
-                            $editar = '<input type="number" name="" class="form-control form-control-sm mb-0" value="' . $resultado->avance . '" onChange="Guardar_Avance_Resultado(this.value,' . $resultado->id . ',' . $idOkr . ',' . Session::get('id_empresa') . ',' . Session::get('id_user') . ',\'okrsOrganizacion?pagina=' . $numeroP . '\')">';
-                            break;
-                    }
+
+                    $editar = '<input type="number" name="" class="form-control form-control-sm mb-0" value="' . $resultado->avance . '" onChange="Guardar_Avance_Resultado(this.value,' . $resultado->id . ',' . $idOkr . ',' . Session::get('id_empresa') . ',' . Session::get('id_user') . ',\'okrsOrganizacion?pagina=' . $numeroP . '\')">';
                 }
             }
 
@@ -338,11 +364,11 @@ class OkrsController extends Controller
             $select = $iniciativa->avance . "%";
             if ($congelar_okrs == false) {
                 if ($tipoRole == 1 || $tipoRole == 2) {
-                    switch ($pagina) {
-                        case 1:
-                            $select = '<input type="number" name="" class="form-control form-control-sm mb-0" value="' . $iniciativa->avance . '" onChange="Guardar_Avance_Iniciativa(this.value,' . $iniciativa->id . ',' . $idOkr . ',' . $idResultado .','.Session::get('id_empresa') . ',' . Session::get('id_user') . ',\'okrsOrganizacion?pagina=' . $numeroP . '\')">';
-                            break;
-                    }
+                    // switch ($pagina) {
+                    // case 1:
+                    $select = '<input type="number" name="" class="form-control form-control-sm mb-0" value="' . $iniciativa->avance . '" onChange="Guardar_Avance_Iniciativa(this.value,' . $iniciativa->id . ',' . $idOkr . ',' . $idResultado . ',' . Session::get('id_empresa') . ',' . Session::get('id_user') . ',\'okrsOrganizacion?pagina=' . $numeroP . '\')">';
+                    // break;
+                    // }
                 }
             }
 
@@ -408,7 +434,7 @@ class OkrsController extends Controller
 
             if ($validar_edit == false) {
                 if ($iniciativa->avance) {
-                    $select = " ".$iniciativa->avance . "%";
+                    $select = " " . $iniciativa->avance . "%";
                 } else {
                     $select = " 0%";
                 }
@@ -459,5 +485,151 @@ class OkrsController extends Controller
 
 
         return $lista_resp_kr;
+    }
+
+    public static function FiltrosPagina($filtros, $anio_curso)
+    {
+        // dd($filtros);
+        if ($filtros->vicepresidencia_fill != '') {
+            $filtroVp = $filtros->vicepresidencia_fill;
+            Session::put('vicepresidencia_fill', $filtros->vicepresidencia_fill);
+            // dd('1');
+        } else {
+            Session::put('vicepresidencia_fill', '');
+            $filtroVp = '';
+            // dd('2');
+        }
+        if ($filtros->areas_fill != '') {
+            $filtroArea = $filtros->areas_fill;
+            Session::put('areas_fill', $filtros->areas_fill);
+        } else {
+            Session::put('areas_fill', '');
+            $filtroArea = '';
+        }
+        if ($filtros->responsable_fill != '') {
+            $filtroResponsable = $filtros->responsable_fill;
+            Session::put('responsable_fill', $filtros->responsable_fill);
+        } else {
+            Session::put('responsable_fill', '');
+            $filtroResponsable = '';
+        }
+        if ($filtros->objestrategico_fill != '') {
+            $filtroObjEst = $filtros->objestrategico_fill;
+            Session::put('objestrategico_fill', $filtros->objestrategico_fill);
+        } else {
+            Session::put('objestrategico_fill', '');
+            $filtroObjEst = '';
+        }
+        if ($filtros->okr_fill != '') {
+            $filtroOkr = $filtros->okr_fill;
+            Session::put('okr_fill', $filtros->okr_fill);
+        } else {
+            Session::put('okr_fill', '');
+            $filtroOkr = '';
+        }
+        if ($filtros->tipo_okr_fill != '') {
+            $filtroTipoOkr = $filtros->tipo_okr_fill;
+            Session::put('tipo_okr_fill', $filtros->tipo_okr_fill);
+        } else {
+            Session::put('tipo_okr_fill', '');
+            $filtroTipoOkr = '';
+        }
+        if ($filtros->anio_fill != Session::get('anio_curso')) {
+            // dd('1');
+            if ($filtros->anio_fill != null) {
+                // dd('2');
+                $filtroAnio = $filtros->anio_fill;
+                Session::put('anio_fill', $filtros->anio_fill);
+            } else {
+                // dd('3');
+                Session::put('anio_fill', $anio_curso);
+                $filtroAnio = $anio_curso;
+            }
+        } else {
+            // dd('4');    
+            Session::put('anio_fill', $anio_curso);
+            $filtroAnio = $anio_curso;
+        }
+        // dd($filtroAnio);
+
+        $filtro_periodo = "";
+        if ($filtros->Q1 != "") {
+            $filtroQ1 = $filtros->Q1;
+            if ($filtro_periodo != "") {
+                $filtro_periodo .= ", 'Q1'";
+            } else {
+                $filtro_periodo .= "'Q1'";
+            }
+            Session::put('Q1', 'on');
+        } else {
+            Session::put('Q1', '');
+            $filtroQ1 = '';
+        }
+        if ($filtros->Q2 != "") {
+            $filtroQ2 = $filtros->Q2;
+            if ($filtro_periodo != "") {
+                $filtro_periodo .= ", 'Q2'";
+            } else {
+                $filtro_periodo .= "'Q2'";
+            }
+            Session::put('Q2', 'on');
+        } else {
+            Session::put('Q2', '');
+            $filtroQ2 = '';
+        }
+        if ($filtros->Q3 != "") {
+            $filtroQ3 = $filtros->Q3;
+            if ($filtro_periodo != "") {
+                $filtro_periodo .= ", 'Q3'";
+            } else {
+                $filtro_periodo .= "'Q3'";
+            }
+            Session::put('Q3', 'on');
+        } else {
+            Session::put('Q3', '');
+            $filtroQ3 = '';
+        }
+        if ($filtros->Q4 != "") {
+            $filtroQ4 = $filtros->Q4;
+            if ($filtro_periodo != "") {
+                $filtro_periodo .= ", 'Q4'";
+            } else {
+                $filtro_periodo .= "'Q4'";
+            }
+            Session::put('Q4', 'on');
+        } else {
+            Session::put('Q4', '');
+            $filtroQ4 = '';
+        }
+        if ($filtros->Anual != "") {
+            $filtroAnual = $filtros->Anual;
+            if ($filtro_periodo != "") {
+                $filtro_periodo .= ", 'Anual'";
+            } else {
+                $filtro_periodo .= "'Anual'";
+            }
+            Session::put('Anual', 'on');
+        } else {
+            Session::put('Anual', '');
+            $filtroAnual = '';
+        }
+
+        $filtroPagina = array(
+            "vicepresidencia_fill" => $filtroVp,
+            "areas_fill" => $filtroArea,
+            "responsable_fill" => $filtroResponsable,
+            "objestrategico_fill" => $filtroObjEst,
+            "okr_fill" => $filtroOkr,
+            "tipo_okr_fill" => $filtroTipoOkr,
+            "anio_fill" => $filtroAnio,
+            "Q1" => $filtroQ1,
+            "Q2" => $filtroQ2,
+            "Q3" => $filtroQ3,
+            "Q4" => $filtroQ4,
+            "Anual" => $filtroAnual,
+            "periodo_fill" => $filtro_periodo
+        );
+
+        return $filtroPagina;
     }
 }

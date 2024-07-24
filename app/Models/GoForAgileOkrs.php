@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class GoForAgileOkrs extends Model
 {
@@ -20,6 +21,30 @@ class GoForAgileOkrs extends Model
         if ($offset) {
             $adicional .= " OFFSET $offset";
         }
+        $filtro = $filtro_usuario = "";
+        if (Session::get('okr_fill') > 0) {
+            $filtro .= " AND Okrs_Equipos.id_okrs = '" . Session::get('okr_fill') . "' ";
+        }
+        if (Session::get('responsable_fill') > 0) {
+            $filtro_usuario = " AND Okrs_Equipos.id_empleado = '" . Session::get('responsable_fill') . "'  ";
+            $filtro_usuario .= " AND Okrs_Resultados.responsables LIKE '%" . Session::get('responsable_fill') . "%'  ";
+        }
+        if (Session::get('areas_fill') > 0) {
+            $filtro .= " AND Okrs_Areas.id_area = '" . Session::get('areas_fill') . "'  ";            
+        }
+    
+        if (Session::get('tipo_okr_fill') > 0) {
+            $filtro .= " AND Okrs.tipo = '" . Session::get('tipo_okr_fill') . "'  ";
+        }
+    
+        if (Session::get('vicepresidencia_fill') > 0) {
+            $filtro .= " AND Okrs_Areas.id_vicepresidencia = " . Session::get('vicepresidencia_fill') . "  ";
+        }
+
+        if (Session::get('periodo_fill') != '') {
+            $filtro .= " AND Okrs_Resultados.periodo IN (" . Session::get('periodo_fill') . ") ";
+        }
+
         DB::setDefaultConnection("mysql-goforagile_okrs");
         $OkrsOrganizacion = DB::Select("
 		SELECT Okrs_Equipos.id AS id, Okrs_Equipos.id_empresa AS id_empresa , 
@@ -35,7 +60,9 @@ class GoForAgileOkrs extends Model
 		LEFT JOIN goforagile_admin.Empleados AS Empleados ON Empleados.id = Okrs_Equipos.id_empleado
 		LEFT JOIN goforagile_admin.Empleados AS EO ON EO.id = Okrs.id_empleado		
 		WHERE Okrs_Equipos.id_empresa = $id_empresa
-        AND Okrs.anio = 2024
+        AND Okrs.anio = ".Session::get('anio_fill')."
+        $filtro
+        $filtro_usuario
         GROUP BY Okrs.id
 		ORDER BY Okrs.objetivo_okr ASC
         $adicional       
@@ -82,8 +109,12 @@ class GoForAgileOkrs extends Model
         $suma_resultado = 0;
         $conteo_resultado = 0;
         $resultado_prom_okr = 0;
+        $filtro = "";
+        if (Session::get('periodo_fill') != '') {
+            $filtro .= " AND periodo IN (" . Session::get('periodo_fill') . ") ";
+        }
         DB::setDefaultConnection("mysql-goforagile_okrs");
-        $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Resultados WHERE id_okrs = $id_okr");
+        $ResultadosOKR = DB::Select("SELECT * FROM Okrs_Resultados WHERE id_okrs = $id_okr $filtro");
         // dd($ResultadosOKR);
         foreach ($ResultadosOKR as $resultado) {
             $avance = (int)$resultado->avance;

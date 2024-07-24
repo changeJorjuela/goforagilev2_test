@@ -31,9 +31,9 @@ Okrs Organización
     <div class="col-md-12 col-sm-12">
         <div class="card">
             <div class="card-body">
-            @include("okrsEquipos.filtroOkrsOrganizacional")
+                @include("okrsEquipos.filtroOkrsOrganizacional")
             </div>
-        </div>       
+        </div>
     </div>
 </div>
 <div class="row gutters">
@@ -49,6 +49,7 @@ Okrs Organización
         </div>
     </div>
 </div>
+@if($Okrs)
 @foreach($Okrs as $okr)
 <div class="row gutters">
     <div class="col-md-12 col-sm-12">
@@ -85,10 +86,24 @@ Okrs Organización
 </div>
 
 @endforeach
+@else
+<div class="row gutters">
+    <div class="col-md-12 col-sm-12">
+        <div class="card bg-warning">            
+            <div class="card-body" style="text-align: center;">
+                <h3 class="card-title">No tiene OKRs relacionados o creados.</h3>                
+            </div>
+        </div>
+
+    </div>
+</div>
+@endif
 
 <div class="row gutters">
     <div class="col-md-12 col-sm-12">
-        {{$paginacion->links()}}
+        <!-- {{$paginacion->links()}} -->
+        {{$paginacion->appends(['vicepresidencia_fill' => $filtroVp, 'areas_fill' => $filtroArea, 'responsable_fill' => $filtroResponsable, 'objestrategico_fill' => $filtroObjEst, 'okr_fill' => $filtroOkr, 'tipo_okr_fill' => $filtroTipoOkr,
+        'anio_fill' => $filtroAnio, 'Q1' => $filtroQ1, 'Q2' => $filtroQ2, 'Q3' => $filtroQ3, 'Q4' => $filtroQ4, 'Anual' => $filtroAnual])}}
     </div>
 </div>
 @include("modals.modalProfile")
@@ -139,16 +154,16 @@ Okrs Organización
             @endhandheld
         }
         if (Resultado) {
-        if (divElement) {
-            // bootstrap.ScrollSpy.getInstance(divElementKr);
-            $('html, body').animate({
-                scrollTop: $("#heading{{ $ResultadoOKR }}").offset().top - 90
-            }, 2000);
-            $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
-            document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
-            $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+            if (divElement) {
+                // bootstrap.ScrollSpy.getInstance(divElementKr);
+                $('html, body').animate({
+                    scrollTop: $("#heading{{ $ResultadoOKR }}").offset().top - 90
+                }, 2000);
+                $("#datosResultados_{{ $ResultadoOKR }}").removeClass("collapsed");
+                document.getElementById("datosResultados_{{ $ResultadoOKR }}").setAttribute("aria-expanded", true);
+                $("#collapseKr{{ $ResultadoOKR }}").addClass("show");
+            }
         }
-    }
 
         // divElement.scrollIntoView(false);
         // divIniciativa.scrollIntoView(false);

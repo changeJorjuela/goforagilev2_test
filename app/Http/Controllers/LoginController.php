@@ -129,8 +129,7 @@ class LoginController extends Controller
                         Session::put('ModDesempenio', $mod_desempenio);
                         Session::put('ModEndomarketing', $mod_endomarketing);
                         Session::put('ModAdmin', $mod_admin);
-                        Session::put('ciclo', $id_ciclo);
-                        Session::put('anio_fill', $anio_curso);
+                        Session::put('ciclo', $id_ciclo);                        
                         Session::put('anio_curso', $anio_curso);
                         
                         Session::save();
